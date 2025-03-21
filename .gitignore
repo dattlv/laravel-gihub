@@ -22,3 +22,5 @@ yarn-error.log
 /.vscode
 /.zed
 /data
+# RULES.md should be version controlled
+!RULES.md
