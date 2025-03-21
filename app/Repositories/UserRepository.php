@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as SupportCollection;
 
 class UserRepository extends BaseRepository
 {
@@ -32,9 +33,9 @@ class UserRepository extends BaseRepository
      * Find users who match a specific role.
      *
      * @param string $role
-     * @return Collection
+     * @return \Illuminate\Support\Collection
      */
-    public function findByRole(string $role): Collection
+    public function findByRole(string $role): \Illuminate\Support\Collection
     {
         return $this->model->where('role', $role)->get();
     }

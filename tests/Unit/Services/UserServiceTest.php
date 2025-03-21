@@ -8,6 +8,8 @@ use App\Services\UserService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use Tests\TestCase;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as SupportCollection;
 
 class UserServiceTest extends TestCase
 {
@@ -91,7 +93,7 @@ class UserServiceTest extends TestCase
     {
         // Arrange
         $role = 'admin';
-        $users = collect([
+        $users = new SupportCollection([
             new User(['name' => 'Admin 1', 'email' => 'admin1@example.com']),
             new User(['name' => 'Admin 2', 'email' => 'admin2@example.com']),
         ]);
@@ -106,6 +108,7 @@ class UserServiceTest extends TestCase
         $result = $this->userService->findByRole($role);
 
         // Assert
+        $this->assertInstanceOf(SupportCollection::class, $result);
         $this->assertEquals(2, $result->count());
         $this->assertEquals('Admin 1', $result[0]->name);
         $this->assertEquals('Admin 2', $result[1]->name);

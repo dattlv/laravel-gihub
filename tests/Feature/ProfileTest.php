@@ -25,6 +25,9 @@ class ProfileTest extends TestCase
     {
         $user = User::factory()->create();
 
+        $user->email_verified_at = now();
+        $user->save();
+
         $response = $this
             ->actingAs($user)
             ->patch('/profile', [

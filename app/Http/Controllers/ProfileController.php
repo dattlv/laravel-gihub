@@ -43,9 +43,18 @@ class ProfileController extends Controller
      */
     public function update(UpdateProfileRequest $request): RedirectResponse
     {
-        $user = $this->userService->updateProfile(
-            $request->user()->id,
-            $request->validated()
+        $user = $request->user();
+        $data = $request->validated();
+
+        // Check if email is being changed
+        if (isset($data['email']) && $data['email'] !== $user->email) {
+            $user->email_verified_at = null;
+            $user->save();
+        }
+
+        $this->userService->updateProfile(
+            $user->id,
+            $data
         );
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
@@ -56,7 +65,7 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $request->validate([
+        $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
 

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Hash;
 
 class UserService extends BaseService
@@ -46,6 +47,13 @@ class UserService extends BaseService
      */
     public function updateProfile(int $userId, array $data): ?User
     {
+        $user = $this->findById($userId);
+
+        // Check if email is being changed
+        if (isset($data['email']) && $data['email'] !== $user->email) {
+            $data['email_verified_at'] = null;
+        }
+
         // Hash password if it's being updated
         if (isset($data['password'])) {
             $data['password'] = Hash::make($data['password']);
@@ -69,9 +77,9 @@ class UserService extends BaseService
      * Find users by role.
      *
      * @param string $role
-     * @return Collection
+     * @return \Illuminate\Support\Collection
      */
-    public function findByRole(string $role): Collection
+    public function findByRole(string $role): \Illuminate\Support\Collection
     {
         return $this->repository->findByRole($role);
     }
