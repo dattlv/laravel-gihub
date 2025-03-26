@@ -3,92 +3,69 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Laravel\Socialite\Facades\Socialite;
+use App\Http\Requests\SocialiteLoginRequest;
+use App\Services\SocialiteService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 
 class SocialiteController extends Controller
 {
-    protected $providers = [
-        'google', 'facebook', 'github', 'gitlab'
-    ];
+    protected $socialiteService;
+
+    public function __construct(SocialiteService $socialiteService)
+    {
+        $this->socialiteService = $socialiteService;
+    }
 
     /**
      * Redirect to provider for authentication
      *
-     * @param string $provider
-     * @return mixed
+     * @param SocialiteLoginRequest $request
+     * @return RedirectResponse
      */
-    public function redirectToProvider($provider)
+    public function redirectToProvider(SocialiteLoginRequest $request): RedirectResponse
     {
-        if (!in_array($provider, $this->providers)) {
+        $provider = $request->provider;
+
+        if (!$this->socialiteService->isValidProvider($provider)) {
+            Log::warning('Invalid social provider attempted', ['provider' => $provider]);
             return redirect()->route('login')->with('error', 'Không hỗ trợ đăng nhập qua ' . $provider);
         }
 
-        return Socialite::driver($provider)->redirect();
+        return \Laravel\Socialite\Facades\Socialite::driver($provider)->redirect();
     }
 
     /**
      * Handle provider callback
      *
-     * @param string $provider
-     * @return mixed
+     * @param SocialiteLoginRequest $request
+     * @return RedirectResponse
      */
-    public function handleProviderCallback($provider)
+    public function handleProviderCallback(SocialiteLoginRequest $request): RedirectResponse
     {
-        try {
-            $socialUser = Socialite::driver($provider)->user();
-        } catch (\Exception $e) {
+        $provider = $request->provider;
+
+        // Get social user data
+        $socialUser = $this->socialiteService->getSocialUser($provider);
+        if (!$socialUser) {
             return redirect()->route('login')->with('error', 'Đăng nhập qua ' . $provider . ' không thành công. Vui lòng thử lại.');
         }
 
-        // Check if user with this provider id exists
-        $user = User::where('provider', $provider)
-            ->where('provider_id', $socialUser->getId())
-            ->first();
-
-        // If user doesn't exist, check if email exists
-        if (!$user) {
-            $user = User::where('email', $socialUser->getEmail())->first();
-
-            // If email exists, update provider details
-            if ($user) {
-                // Check if email has changed
-                $emailChanged = $user->email !== $socialUser->getEmail();
-
-                // Update user information
-                $user->update([
-                    'provider' => $provider,
-                    'provider_id' => $socialUser->getId(),
-                    'avatar' => $socialUser->getAvatar(),
-                    // Set email_verified_at to null if email has changed
-                    'email_verified_at' => $emailChanged ? null : $user->email_verified_at
-                ]);
-
-                // If the email was changed, we need to verify it
-                if ($emailChanged) {
-                    $user->sendEmailVerificationNotification();
-                }
-            } else {
-                // Create new user
-                $user = User::create([
-                    'name' => $socialUser->getName(),
-                    'email' => $socialUser->getEmail(),
-                    'password' => Hash::make(Str::random(16)),
-                    'provider' => $provider,
-                    'provider_id' => $socialUser->getId(),
-                    'avatar' => $socialUser->getAvatar(),
-                    'role_id' => 3, // Regular user role
-                    'email_verified_at' => now() // Social login verifies email
-                ]);
-            }
+        // Validate social user data
+        if (!$this->socialiteService->validateSocialUser($socialUser)) {
+            Log::error('Missing required social data', [
+                'provider' => $provider,
+                'has_id' => (bool)$socialUser->getId(),
+                'has_email' => (bool)$socialUser->getEmail()
+            ]);
+            return redirect()->route('login')->with('error', 'Không thể lấy thông tin cần thiết từ ' . $provider);
         }
 
+        // Find or create user
+        $user = $this->socialiteService->findOrCreateUser($socialUser, $provider);
+
         // Login user
-        Auth::login($user, true);
+        $this->socialiteService->loginUser($user);
 
         // Redirect to dashboard
         return redirect()->intended('dashboard');
