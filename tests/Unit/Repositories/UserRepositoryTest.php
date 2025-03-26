@@ -16,8 +16,6 @@ class UserRepositoryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        // Create the repository with a real User model
         $this->userRepository = new UserRepository(new User());
     }
 
@@ -74,6 +72,24 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals('test@example.com', $foundUser->email);
     }
 
+    public function test_find_by_provider()
+    {
+        // Arrange
+        $user = User::factory()->create([
+            'provider' => 'google',
+            'provider_id' => '123'
+        ]);
+
+        // Act
+        $foundUser = $this->userRepository->findByProvider('google', '123');
+
+        // Assert
+        $this->assertInstanceOf(User::class, $foundUser);
+        $this->assertEquals($user->id, $foundUser->id);
+        $this->assertEquals('google', $foundUser->provider);
+        $this->assertEquals('123', $foundUser->provider_id);
+    }
+
     public function test_update_user()
     {
         // Arrange
@@ -95,6 +111,26 @@ class UserRepositoryTest extends TestCase
         ]);
     }
 
+    public function test_update_provider_info()
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $providerData = [
+            'provider' => 'google',
+            'provider_id' => '123',
+            'avatar' => 'https://example.com/avatar.jpg'
+        ];
+
+        // Act
+        $result = $this->userRepository->updateProviderInfo($user, $providerData);
+
+        // Assert
+        $this->assertTrue($result);
+        $this->assertEquals('google', $user->fresh()->provider);
+        $this->assertEquals('123', $user->fresh()->provider_id);
+        $this->assertEquals('https://example.com/avatar.jpg', $user->fresh()->avatar);
+    }
+
     public function test_delete_user()
     {
         // Arrange
@@ -110,5 +146,33 @@ class UserRepositoryTest extends TestCase
         $this->assertDatabaseMissing('users', [
             'id' => $user->id,
         ]);
+    }
+
+    public function test_find_by_role()
+    {
+        // Arrange
+        User::factory()->create(['role' => 'admin']);
+        User::factory()->create(['role' => 'user']);
+
+        // Act
+        $admins = $this->userRepository->findByRole('admin');
+
+        // Assert
+        $this->assertEquals(1, $admins->count());
+        $this->assertEquals('admin', $admins->first()->role);
+    }
+
+    public function test_paginate()
+    {
+        // Arrange
+        User::factory()->count(20)->create();
+
+        // Act
+        $paginated = $this->userRepository->paginate(10);
+
+        // Assert
+        $this->assertEquals(10, $paginated->perPage());
+        $this->assertEquals(2, $paginated->lastPage());
+        $this->assertEquals(20, $paginated->total());
     }
 }
