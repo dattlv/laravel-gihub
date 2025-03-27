@@ -79,7 +79,7 @@ class SocialiteService
                     'provider' => $provider,
                     'provider_id' => $socialUser->getId(),
                     'avatar' => $socialUser->getAvatar(),
-                    'role_id' => 3,
+                    'role' => 'user',
                     'email_verified_at' => now()
                 ]);
             }
