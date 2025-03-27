@@ -21,12 +21,30 @@ class AppServiceProvider extends ServiceProvider
             }
         );
 
+        $this->app->bind(
+            \App\Repositories\SocialiteRepository::class,
+            function ($app) {
+                return new \App\Repositories\SocialiteRepository(
+                    new \App\Models\User()
+                );
+            }
+        );
+
         // Bind services
         $this->app->bind(
             \App\Services\UserService::class,
             function ($app) {
                 return new \App\Services\UserService(
                     $app->make(\App\Repositories\UserRepository::class)
+                );
+            }
+        );
+
+        $this->app->bind(
+            \App\Services\SocialiteService::class,
+            function ($app) {
+                return new \App\Services\SocialiteService(
+                    $app->make(\App\Repositories\SocialiteRepository::class)
                 );
             }
         );
