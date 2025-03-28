@@ -17,6 +17,9 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
 
+        // Add translations to props
+        props.translations = window.translations || {};
+
         root.render(<App {...props} />);
     },
     progress: {
