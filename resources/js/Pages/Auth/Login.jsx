@@ -2,6 +2,7 @@ import { Head } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import EmailVerificationStep from '@/Components/Auth/EmailVerificationStep';
 import PasswordStep from '@/Components/Auth/PasswordStep';
+import StepTransition from '@/Components/Auth/StepTransition';
 import { useState } from 'react';
 
 export default function Login({ status, canResetPassword }) {
@@ -23,11 +24,15 @@ export default function Login({ status, canResetPassword }) {
                 </div>
             )}
 
-            {step === 1 ? (
-                <EmailVerificationStep onEmailVerified={handleEmailVerified} />
-            ) : (
-                <PasswordStep user={user} canResetPassword={canResetPassword} />
-            )}
+            <div className="relative min-h-[250px]">
+                <StepTransition step={step}>
+                    {step === 1 ? (
+                        <EmailVerificationStep onEmailVerified={handleEmailVerified} />
+                    ) : (
+                        <PasswordStep user={user} canResetPassword={canResetPassword} />
+                    )}
+                </StepTransition>
+            </div>
         </GuestLayout>
     );
 }
