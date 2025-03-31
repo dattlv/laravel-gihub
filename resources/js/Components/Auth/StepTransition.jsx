@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import LoadingOverlay from '@/Components/LoadingOverlay';
 
-export default function StepTransition({ children, step }) {
+export default function StepTransition({ children, step, isLoading, onNext, onPrevious }) {
     const slideVariants = {
         enter: (direction) => ({
             x: direction > 0 ? 1000 : -1000,
@@ -45,16 +46,31 @@ export default function StepTransition({ children, step }) {
 
                         if (swipe < -swipeConfidenceThreshold) {
                             // Swipe left to go forward
-                            if (step === 1) handleEmailVerified();
+                            if (step === 1 && onNext) onNext();
                         } else if (swipe > swipeConfidenceThreshold) {
                             // Swipe right to go back
-                            if (step === 2) setStep(1);
+                            if (step === 2 && onPrevious) onPrevious();
                         }
                     }}
                     className="w-full"
                 >
                     {children}
                 </motion.div>
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {isLoading && (
+                    <motion.div
+                        key="loading-wrapper"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute inset-0"
+                    >
+                        <LoadingOverlay message="Đang xác thực..." />
+                    </motion.div>
+                )}
             </AnimatePresence>
         </div>
     );
