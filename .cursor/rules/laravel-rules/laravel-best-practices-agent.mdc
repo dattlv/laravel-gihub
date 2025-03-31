@@ -1,0 +1,165 @@
+---
+description: This rule governs Laravel development practices across the entire project. It should be applied whenever: (1) Creating or modifying Laravel components (Controllers, Models, Services, etc.), (2) Working with database and migrations, (3) Implementing authentication and authorization, (4) Setting up routes and middleware, (5) Handling requests and responses, (6) Working with Laravel's built-in features. The rule ensures consistent code structure, proper use of Laravel features, and maintainable application architecture.
+globs:
+alwaysApply: false
+---
+
+# Laravel Best Practices
+
+## Critical Rules
+
+- Follow Laravel's directory structure and naming conventions:
+  - Controllers: `app/Http/Controllers/{Resource}Controller.php`
+  - Models: `app/Models/{Singular}.php`
+  - Services: `app/Services/{Resource}Service.php`
+  - Repositories: `app/Repositories/{Resource}Repository.php`
+  - Requests: `app/Http/Requests/{Resource}/{Action}Request.php`
+  - Resources: `app/Http/Resources/{Resource}Resource.php`
+  - Middleware: `app/Http/Middleware/{Action}.php`
+  - Migrations: `database/migrations/{timestamp}_{action}_{table}.php`
+
+- Use Laravel's built-in features and helpers:
+  - Use Eloquent ORM instead of raw SQL queries
+  - Use Laravel's authentication system (Sanctum, Fortify, etc.)
+  - Use Form Request Validation for complex validations
+  - Use API Resources for API responses
+  - Use Laravel's Queue system for long-running tasks
+  - Use Laravel's Cache system for performance optimization
+
+- Follow Service-Repository pattern for complex business logic:
+  - Services handle business logic
+  - Repositories handle database operations
+  - Controllers stay thin and handle HTTP layer only
+
+- Security best practices:
+  - Always validate user input using Form Requests
+  - Use Laravel's CSRF protection
+  - Use prepared statements (default in Eloquent)
+  - Hash passwords using Laravel's Hash facade
+  - Use Laravel's authentication guards appropriately
+  - Implement rate limiting for APIs
+
+- Database and Eloquent:
+  - Use migrations for database changes
+  - Use seeders and factories for test data
+  - Define relationships in models
+  - Use model observers for complex model events
+  - Use database transactions for critical operations
+  - Use eager loading to avoid N+1 problems
+
+- Route organization:
+  - Group related routes
+  - Use route names for all routes
+  - Use route model binding when possible
+  - Apply middleware groups appropriately
+  - Version your APIs
+
+- Testing:
+  - Write feature tests for critical paths
+  - Use database factories for test data
+  - Use Laravel's testing helpers
+  - Test HTTP responses and database states
+
+## Examples
+
+<example>
+// Good Controller Example
+namespace App\Http\Controllers;
+
+class UserController extends Controller
+{
+    private $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
+    public function store(StoreUserRequest $request)
+    {
+        $user = $this->userService->createUser($request->validated());
+        return new UserResource($user);
+    }
+}
+
+// Good Model Example
+namespace App\Models;
+
+class User extends Authenticatable
+{
+    protected $fillable = ['name', 'email', 'password'];
+    protected $hidden = ['password'];
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+}
+
+// Good Service Example
+namespace App\Services;
+
+class UserService
+{
+    private $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
+    public function createUser(array $data)
+    {
+        $data['password'] = Hash::make($data['password']);
+        return $this->userRepository->create($data);
+    }
+}
+</example>
+
+<example type="invalid">
+// Bad Controller Example - Too Much Logic
+class UserController extends Controller
+{
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8'
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password)
+        ]);
+
+        // Business logic in controller
+        $this->sendWelcomeEmail($user);
+        $this->createUserProfile($user);
+
+        return response()->json($user);
+    }
+}
+
+// Bad Model Example - Too Much Logic
+class User extends Model
+{
+    public function someComplexOperation()
+    {
+        // Business logic in model
+        if ($this->isSpecialUser()) {
+            $this->processSpecialUser();
+        }
+        $this->updateLastLogin();
+        $this->sendNotification();
+    }
+}
+
+// Bad Route Example
+Route::post('/users', function (Request $request) {
+    // Logic directly in route
+    $user = User::create($request->all());
+    return $user;
+});
+</example>
