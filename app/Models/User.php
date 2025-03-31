@@ -21,6 +21,18 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'google_id',
+        'google_token',
+        'google_refresh_token',
+        'facebook_id',
+        'facebook_token',
+        'facebook_refresh_token',
+        'github_id',
+        'github_token',
+        'github_refresh_token',
+        'gitlab_id',
+        'gitlab_token',
+        'gitlab_refresh_token',
     ];
 
     /**
@@ -31,6 +43,14 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'google_token',
+        'google_refresh_token',
+        'facebook_token',
+        'facebook_refresh_token',
+        'github_token',
+        'github_refresh_token',
+        'gitlab_token',
+        'gitlab_refresh_token',
     ];
 
     /**
