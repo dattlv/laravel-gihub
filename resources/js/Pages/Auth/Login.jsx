@@ -3,6 +3,7 @@ import GuestLayout from '@/Layouts/GuestLayout';
 import EmailVerificationStep from '@/Components/Auth/EmailVerificationStep';
 import PasswordStep from '@/Components/Auth/PasswordStep';
 import StepTransition from '@/Components/Auth/StepTransition';
+import SocialLoginButtons from '@/Components/Auth/SocialLoginButtons';
 import { useState } from 'react';
 import { authApiSlice } from '@/features/auth/authApiSlice';
 
@@ -80,6 +81,10 @@ export default function Login({ status, canResetPassword }) {
             <form onSubmit={handleSubmit}>
                 {/* Your form elements here */}
             </form>
+
+            <div className="mt-6">
+                <SocialLoginButtons />
+            </div>
         </GuestLayout>
     );
 }
