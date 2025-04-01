@@ -1,8 +1,8 @@
 import React from 'react';
-import AuthenticatedLayout from '../../layouts/AuthenticatedLayout';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import SprintBoard from '../../components/UI/SprintBoard';
-import SprintMetrics from '../../components/UI/SprintMetrics';
+import SprintBoard from '@/Components/UI/SprintBoard';
+import SprintMetrics from '@/Components/UI/SprintMetrics';
 
 const SprintIndex = ({ auth, sprint, tasks, burndownData, velocityData }) => {
   const handleTaskMove = () => {
