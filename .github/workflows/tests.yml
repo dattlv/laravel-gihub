@@ -55,11 +55,11 @@ jobs:
       - name: Run Migrations
         run: php artisan migrate --force
 
-      - name: Run npm install
-        run: npm install
+      - name: Run yarn install
+        run: yarn install
 
-      - name: Run npm run build
-        run: npm run build
+      - name: Run yarn build
+        run: yarn build
 
       - name: Execute tests
         run: php artisan test
