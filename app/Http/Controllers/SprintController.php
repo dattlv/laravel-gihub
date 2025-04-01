@@ -12,14 +12,66 @@ class SprintController extends Controller
     public function index()
     {
         // Mock data for testing
+        $sprints = [
+            [
+                'id' => 1,
+                'name' => 'Sprint 1',
+                'start_date' => '2024-03-01',
+                'end_date' => '2024-03-14',
+                'status' => 'completed',
+                'total_points' => 50,
+                'completed_points' => 50,
+                'days_remaining' => 0
+            ],
+            [
+                'id' => 2,
+                'name' => 'Sprint 2',
+                'start_date' => '2024-03-15',
+                'end_date' => '2024-03-28',
+                'status' => 'completed',
+                'total_points' => 45,
+                'completed_points' => 45,
+                'days_remaining' => 0
+            ],
+            [
+                'id' => 3,
+                'name' => 'Sprint 3',
+                'start_date' => '2024-03-29',
+                'end_date' => '2024-04-11',
+                'status' => 'active',
+                'total_points' => 55,
+                'completed_points' => 20,
+                'days_remaining' => 7
+            ],
+            [
+                'id' => 4,
+                'name' => 'Sprint 4',
+                'start_date' => '2024-04-12',
+                'end_date' => '2024-04-25',
+                'status' => 'planned',
+                'total_points' => 40,
+                'completed_points' => 0,
+                'days_remaining' => 14
+            ],
+        ];
+
+        return Inertia::render('Sprints/Index', [
+            'sprints' => $sprints
+        ]);
+    }
+
+    public function show($id)
+    {
+        // Mock data for testing
         $sprint = [
-            'name' => 'Sprint 1',
-            'start_date' => '2024-03-21',
-            'end_date' => '2024-04-04',
-            'status' => 'In Progress',
-            'total_points' => 50,
+            'id' => $id,
+            'name' => 'Sprint 3',
+            'start_date' => '2024-03-29',
+            'end_date' => '2024-04-11',
+            'status' => 'active',
+            'total_points' => 55,
             'completed_points' => 20,
-            'days_remaining' => 10
+            'days_remaining' => 7
         ];
 
         $tasks = [
@@ -89,7 +141,7 @@ class SprintController extends Controller
             ]
         ];
 
-        return Inertia::render('Sprints/Index', [
+        return Inertia::render('Sprints/Show', [
             'sprint' => $sprint,
             'tasks' => $tasks,
             'burndownData' => $burndownData,
