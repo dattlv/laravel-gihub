@@ -5,7 +5,7 @@ namespace Tests\Unit\Services;
 use App\Models\User;
 use App\Services\SocialLoginService;
 use Exception;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 use Mockery;
@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class SocialLoginServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     /**
      * @var \Mockery\MockInterface
