@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Navbar from '@/Components/UI/Navbar';
@@ -6,7 +6,17 @@ import Sidebar from '@/Components/UI/Sidebar';
 
 export default function AuthenticatedLayout({ header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+        // Lấy giá trị từ localStorage khi khởi tạo
+        const saved = localStorage.getItem('sidebarCollapsed');
+        return saved ? JSON.parse(saved) : false;
+    });
     const user = usePage().props.auth.user;
+
+    // Lưu trạng thái vào localStorage mỗi khi thay đổi
+    useEffect(() => {
+        localStorage.setItem('sidebarCollapsed', JSON.stringify(isSidebarCollapsed));
+    }, [isSidebarCollapsed]);
 
     const navigation = [
         {
@@ -76,28 +86,29 @@ export default function AuthenticatedLayout({ header, children }) {
         { id: 2, name: 'Mobile App', color: 'bg-purple-600' },
         { id: 3, name: 'Database Migration', color: 'bg-yellow-500' },
     ];
-
+    console.log(isSidebarCollapsed);
     return (
         <div className="min-h-screen bg-gray-100">
             <Navbar
                 user={user}
                 showingNavigationDropdown={showingNavigationDropdown}
                 setShowingNavigationDropdown={setShowingNavigationDropdown}
+                isSidebarCollapsed={isSidebarCollapsed}
             />
-            <Sidebar />
+            <Sidebar isCollapsed={isSidebarCollapsed} setIsCollapsed={setIsSidebarCollapsed} />
 
             {/* Main Content */}
-            <div className="md:pl-64 flex flex-col flex-1">
+            <div className={`flex flex-col flex-1 transition-all duration-300 ${isSidebarCollapsed ? 'md:pl-16' : 'md:pl-64'}`}>
                 {header && (
                     <header className="bg-white shadow">
-                        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        <div className="w-full px-4 py-6 sm:px-6 lg:px-8">
                             {header}
                         </div>
                     </header>
                 )}
 
                 <main className="flex-1">
-                    <div className="py-6">
+                    <div className="w-full px-4 py-6 sm:px-6 lg:px-8">
                         {children}
                     </div>
                 </main>
