@@ -185,4 +185,56 @@ class ProjectAuthorizationTest extends TestCase
         $response->assertOk();
         $this->assertEquals($newOwner->id, $this->project->fresh()->owner_id);
     }
+
+    /** @test */
+    public function it_validates_project_update_data()
+    {
+        $this->actingAs($this->owner);
+
+        $response = $this->putJson("/api/v1/projects/{$this->project->id}", [
+            'name' => '' // empty name should fail validation
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['name']);
+    }
+
+    /** @test */
+    public function it_returns_404_for_non_existent_project()
+    {
+        $this->actingAs($this->owner);
+        $nonExistentId = 99999;
+
+        $response = $this->getJson("/api/v1/projects/{$nonExistentId}");
+        $response->assertNotFound();
+    }
+
+    /** @test */
+    public function owner_cannot_transfer_ownership_to_non_existent_user()
+    {
+        $this->actingAs($this->owner);
+        $nonExistentUserId = 99999;
+
+        $response = $this->postJson("/api/v1/projects/{$this->project->id}/transfer-ownership", [
+            'user_id' => $nonExistentUserId
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['user_id']);
+    }
+
+    /** @test */
+    public function it_validates_member_role_when_adding_member()
+    {
+        $this->actingAs($this->owner);
+        $newUser = User::factory()->create();
+
+        $response = $this->postJson("/api/v1/projects/{$this->project->id}/members", [
+            'user_id' => $newUser->id,
+            'role' => 'invalid_role' // should fail validation
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['role']);
+    }
 }

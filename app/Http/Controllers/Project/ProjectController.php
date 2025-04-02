@@ -11,9 +11,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ProjectController extends Controller
 {
+    use AuthorizesRequests;
+
     protected ProjectService $projectService;
 
     public function __construct(ProjectService $projectService)
@@ -51,6 +54,8 @@ class ProjectController extends Controller
      */
     public function show(Project $project): JsonResponse
     {
+        $this->authorize('view', $project);
+
         // Load necessary relationships
         $project->load(['category', 'members', 'owner']);
 
@@ -80,6 +85,8 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project): JsonResponse
     {
+        $this->authorize('update', $project);
+
         $project = $this->projectService->updateProject(
             $project->id,
             $request->validated()
@@ -96,6 +103,8 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project): JsonResponse
     {
+        $this->authorize('delete', $project);
+
         $this->projectService->deleteProject($project->id);
 
         return response()->json([
@@ -125,6 +134,25 @@ class ProjectController extends Controller
 
         return response()->json([
             'message' => 'Project restored successfully',
+            'data' => $project
+        ]);
+    }
+
+    /**
+     * Transfer project ownership to another user.
+     */
+    public function transferOwnership(Request $request, Project $project): JsonResponse
+    {
+        $this->authorize('transferOwnership', $project);
+
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id'
+        ]);
+
+        $project = $this->projectService->transferOwnership($project->id, $validated['user_id']);
+
+        return response()->json([
+            'message' => 'Project ownership transferred successfully',
             'data' => $project
         ]);
     }

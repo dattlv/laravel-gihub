@@ -32,6 +32,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::delete('/{project}', [ProjectController::class, 'destroy']);
             Route::patch('/{project}/archive', [ProjectController::class, 'archive']);
             Route::patch('/{project}/restore', [ProjectController::class, 'restore']);
+            Route::post('/{project}/transfer-ownership', [ProjectController::class, 'transferOwnership']);
 
             // Project Members
             Route::get('/{project}/members', [ProjectMemberController::class, 'index']);

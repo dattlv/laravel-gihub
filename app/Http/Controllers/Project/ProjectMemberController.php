@@ -63,6 +63,11 @@ class ProjectMemberController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
+        // Prevent modifying owner's role
+        if ($userId === $project->owner_id) {
+            return response()->json(['message' => 'Cannot modify owner role'], 403);
+        }
+
         $member = $this->memberService->updateMemberRole(
             $project->id,
             $userId,

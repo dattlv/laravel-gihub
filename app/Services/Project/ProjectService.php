@@ -222,4 +222,43 @@ class ProjectService
                     ->orderBy('created_at', 'desc')
                     ->paginate($perPage);
     }
+
+    /**
+     * Transfer project ownership to another user
+     *
+     * @param int $projectId
+     * @param int $newOwnerId
+     * @return Project
+     */
+    public function transferOwnership(int $projectId, int $newOwnerId): Project
+    {
+        return DB::transaction(function () use ($projectId, $newOwnerId) {
+            // Update project owner
+            $project = $this->projectRepository->update($projectId, [
+                'owner_id' => $newOwnerId
+            ]);
+
+            // Update member roles
+            $oldOwnerMember = $this->memberRepository->findByProjectAndUser($projectId, $project->owner_id);
+            if ($oldOwnerMember) {
+                $this->memberRepository->update($oldOwnerMember->id, ['role' => 'admin']);
+            }
+
+            // Add new owner as member if not already
+            $newOwnerMember = $this->memberRepository->findByProjectAndUser($projectId, $newOwnerId);
+            if (!$newOwnerMember) {
+                $this->memberRepository->create([
+                    'project_id' => $projectId,
+                    'user_id' => $newOwnerId,
+                    'role' => 'owner'
+                ]);
+            } else {
+                $this->memberRepository->update($newOwnerMember->id, ['role' => 'owner']);
+            }
+
+            event(new ProjectUpdated($project, ['owner_id' => $newOwnerId]));
+
+            return $project;
+        });
+    }
 }

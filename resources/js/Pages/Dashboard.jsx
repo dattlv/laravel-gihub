@@ -21,7 +21,7 @@ export default function Dashboard({ auth }) {
       <Head title="Dashboard" />
 
       <div className="py-12">
-        <div className="w-full">
+        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           {/* Welcome Message */}
           <div className="mb-6 overflow-hidden bg-white p-6 shadow-sm sm:rounded-lg">
             <div className="flex items-center justify-between">
