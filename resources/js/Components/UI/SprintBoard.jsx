@@ -32,12 +32,12 @@ const SprintBoard = ({ sprint, tasks, onTaskMove }) => {
     <div className="p-4">
       <div className="mb-4">
         <h2 className="text-2xl font-bold">{sprint.name}</h2>
-        <div className="flex items-center mt-2">
+        <div className="mt-2 flex items-center">
           <div className="text-sm text-gray-600">
             {new Date(sprint.start_date).toLocaleDateString()} -{' '}
             {new Date(sprint.end_date).toLocaleDateString()}
           </div>
-          <div className="ml-4 px-2 py-1 rounded bg-blue-100 text-blue-800 text-sm">
+          <div className="ml-4 rounded bg-blue-100 px-2 py-1 text-sm text-blue-800">
             {sprint.status}
           </div>
         </div>
@@ -46,8 +46,8 @@ const SprintBoard = ({ sprint, tasks, onTaskMove }) => {
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="grid grid-cols-4 gap-4">
           {Object.entries(columns).map(([columnId, column]) => (
-            <div key={columnId} className="bg-gray-100 p-4 rounded-lg">
-              <h3 className="font-semibold mb-4">{column.title}</h3>
+            <div key={columnId} className="rounded-lg bg-gray-100 p-4">
+              <h3 className="mb-4 font-semibold">{column.title}</h3>
               <Droppable droppableId={columnId}>
                 {provided => (
                   <div
@@ -66,14 +66,14 @@ const SprintBoard = ({ sprint, tasks, onTaskMove }) => {
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            className="bg-white p-3 rounded mb-2 shadow-sm"
+                            className="mb-2 rounded bg-white p-3 shadow-sm"
                           >
                             <div className="font-medium">{task.title}</div>
-                            <div className="text-sm text-gray-600 mt-1">
+                            <div className="mt-1 text-sm text-gray-600">
                               {task.description}
                             </div>
-                            <div className="flex items-center mt-2">
-                              <div className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                            <div className="mt-2 flex items-center">
+                              <div className="rounded bg-blue-100 px-2 py-1 text-xs text-blue-800">
                                 {task.story_points} pts
                               </div>
                               {task.assigned_to && (
