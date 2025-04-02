@@ -4,7 +4,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
     login: builder.mutation({
       query: credentials => ({
-        url: '/login',
+        url: route('api.auth.login'),
         method: 'POST',
         body: credentials,
       }),
@@ -12,13 +12,13 @@ export const authApiSlice = apiSlice.injectEndpoints({
     }),
     logout: builder.mutation({
       query: () => ({
-        url: '/logout',
+        url: route('api.auth.logout'),
         method: 'POST',
       }),
       invalidatesTags: ['Auth'],
     }),
     getUser: builder.query({
-      query: () => '/user',
+      query: () => route('api.auth.user'),
       providesTags: ['Auth'],
     }),
   }),

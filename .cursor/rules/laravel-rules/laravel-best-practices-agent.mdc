@@ -1,6 +1,6 @@
 ---
 description: This rule governs Laravel development practices across the entire project. It should be applied whenever: (1) Creating or modifying Laravel components (Controllers, Models, Services, etc.), (2) Working with database and migrations, (3) Implementing authentication and authorization, (4) Setting up routes and middleware, (5) Handling requests and responses, (6) Working with Laravel's built-in features. The rule ensures consistent code structure, proper use of Laravel features, and maintainable application architecture.
-globs:
+globs: 
 alwaysApply: false
 ---
 
@@ -30,6 +30,34 @@ alwaysApply: false
   - Services handle business logic
   - Repositories handle database operations
   - Controllers stay thin and handle HTTP layer only
+
+- Route organization:
+  - Group related routes
+  - Use route names for all routes following the convention:
+    - Format: `{api}.{version}.{resource}.{action}`
+    - Examples:
+      - `api.v1.projects.index`
+      - `api.v1.projects.members.store`
+      - `api.auth.login`
+  - Route names must be:
+    - All lowercase
+    - Use dots (.) as separators
+    - Start with 'api' for API routes
+    - Include version for versioned routes
+    - Include resource name in plural form
+    - End with the action (index, store, show, update, destroy, etc.)
+  - Group routes using prefix() and name() methods:
+    ```php
+    Route::prefix('v1')->name('api.v1.')->group(function () {
+        Route::prefix('projects')->name('projects.')->group(function () {
+            Route::get('/', [ProjectController::class, 'index'])->name('index');
+            // More routes...
+        });
+    });
+    ```
+  - Use route model binding when possible
+  - Apply middleware groups appropriately
+  - Version your APIs
 
 - Security best practices:
   - Always validate user input using Form Requests
