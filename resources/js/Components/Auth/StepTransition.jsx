@@ -5,8 +5,8 @@ export default function StepTransition({
   children,
   step,
   isLoading = false,
-  onNext,
-  onPrevious,
+  _onNext,
+  _onPrevious,
 }) {
   return (
     <div className="relative">

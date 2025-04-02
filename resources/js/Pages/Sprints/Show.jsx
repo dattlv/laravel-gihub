@@ -5,7 +5,7 @@ import SprintBoard from '@/Components/UI/SprintBoard';
 import SprintMetrics from '@/Components/UI/SprintMetrics';
 
 const SprintShow = ({ auth, sprint, tasks, burndownData, velocityData }) => {
-  const handleTaskMove = (taskId, sourceStatus, destinationStatus) => {
+  const handleDragEnd = ({ _taskId, _sourceStatus, _destinationStatus }) => {
     // TODO: Implement task status update logic
   };
 
@@ -82,7 +82,7 @@ const SprintShow = ({ auth, sprint, tasks, burndownData, velocityData }) => {
             <SprintBoard
               sprint={sprint}
               tasks={tasks}
-              onTaskMove={handleTaskMove}
+              onTaskMove={handleDragEnd}
             />
           </div>
         </div>
