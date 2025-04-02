@@ -35,10 +35,10 @@ class ProjectFactory extends Factory
             'end_date' => $this->faker->dateTimeBetween($startDate, '+6 months'),
             'status' => $this->faker->randomElement(['planning', 'active', 'on_hold', 'completed', 'cancelled']),
             'visibility' => $this->faker->randomElement(['public', 'private', 'team']),
+            'priority' => $this->faker->randomElement(['low', 'medium', 'high', 'urgent']),
             'settings' => [
-                'notifications_enabled' => $this->faker->boolean(),
-                'theme' => $this->faker->randomElement(['light', 'dark']),
-                'tags' => $this->faker->words(3),
+                'notifications' => $this->faker->boolean(),
+                'task_tracking' => $this->faker->boolean()
             ],
         ];
     }

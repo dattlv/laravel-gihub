@@ -5,6 +5,8 @@ namespace App\Services\Project;
 use App\Models\ProjectMember;
 use App\Repositories\Contracts\ProjectMemberRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class ProjectMemberService
 {
@@ -26,17 +28,25 @@ class ProjectMemberService
      */
     public function addMember(int $projectId, int $userId, string $role = 'member', array $permissions = []): ProjectMember
     {
-        // Set default permissions if not provided
-        if (empty($permissions)) {
-            $permissions = $this->getDefaultPermissions($role);
-        }
+        try {
+            // Set default permissions if not provided
+            if (empty($permissions)) {
+                $permissions = $this->getDefaultPermissions($role);
+            }
 
-        return $this->memberRepository->create([
-            'project_id' => $projectId,
-            'user_id' => $userId,
-            'role' => $role,
-            'permissions' => $permissions,
-        ]);
+            $member = $this->memberRepository->create([
+                'project_id' => $projectId,
+                'user_id' => $userId,
+                'role' => $role,
+                'permissions' => $permissions,
+            ]);
+
+            return $member->load('user');
+        } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+            $validator = Validator::make([], []);
+            $validator->errors()->add('user_id', 'This user is already a member of the project');
+            throw new ValidationException($validator);
+        }
     }
 
     /**
@@ -71,7 +81,8 @@ class ProjectMemberService
         // If permissions not provided, use default permissions for the role
         $permissions = $permissions ?? $this->getDefaultPermissions($role);
 
-        return $this->memberRepository->updateMemberRole($projectId, $userId, $role, $permissions);
+        $member = $this->memberRepository->updateMemberRole($projectId, $userId, $role, $permissions);
+        return $member->load('user');
     }
 
     /**
@@ -82,7 +93,7 @@ class ProjectMemberService
      */
     public function getProjectMembers(int $projectId): Collection
     {
-        return $this->memberRepository->getByProjectId($projectId);
+        return $this->memberRepository->getByProjectId($projectId)->load('user');
     }
 
     /**
@@ -94,7 +105,7 @@ class ProjectMemberService
      */
     public function getMembersByRole(int $projectId, string $role): Collection
     {
-        return $this->memberRepository->getByRole($projectId, $role);
+        return $this->memberRepository->getByRole($projectId, $role)->load('user');
     }
 
     /**

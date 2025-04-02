@@ -77,4 +77,18 @@ class ProjectMemberRepositoryEloquent extends BaseRepositoryEloquent implements 
             ->where('user_id', $userId)
             ->exists();
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function deleteById(int $id): bool
+    {
+        $member = $this->model->find($id);
+
+        if ($member) {
+            return $member->forceDelete();
+        }
+
+        return false;
+    }
 }

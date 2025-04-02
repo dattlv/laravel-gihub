@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Project;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Project\AddMemberRequest;
 use App\Http\Requests\Project\UpdateMemberRequest;
+use App\Http\Resources\Project\ProjectMemberResource;
 use App\Models\Project;
 use App\Services\Project\ProjectMemberService;
 use Illuminate\Http\JsonResponse;
-use Inertia\Inertia;
-use Inertia\Response;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectMemberController extends Controller
 {
@@ -23,14 +23,13 @@ class ProjectMemberController extends Controller
     /**
      * Display a listing of project members.
      */
-    public function index(Project $project): Response
+    public function index(Project $project): JsonResponse
     {
         // Load members with their user information
         $members = $this->memberService->getProjectMembers($project->id);
 
-        return Inertia::render('Projects/Members/Index', [
-            'project' => $project,
-            'members' => $members
+        return response()->json([
+            'data' => ProjectMemberResource::collection($members)
         ]);
     }
 
@@ -39,6 +38,10 @@ class ProjectMemberController extends Controller
      */
     public function store(AddMemberRequest $request, Project $project): JsonResponse
     {
+        if (!Gate::allows('manage-members', $project)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $member = $this->memberService->addMember(
             $project->id,
             $request->validated('user_id'),
@@ -47,8 +50,7 @@ class ProjectMemberController extends Controller
         );
 
         return response()->json([
-            'message' => 'Member added successfully',
-            'member' => $member
+            'data' => new ProjectMemberResource($member)
         ], 201);
     }
 
@@ -57,6 +59,10 @@ class ProjectMemberController extends Controller
      */
     public function update(UpdateMemberRequest $request, Project $project, int $userId): JsonResponse
     {
+        if (!Gate::allows('manage-members', $project)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $member = $this->memberService->updateMemberRole(
             $project->id,
             $userId,
@@ -65,8 +71,7 @@ class ProjectMemberController extends Controller
         );
 
         return response()->json([
-            'message' => 'Member role updated successfully',
-            'member' => $member
+            'data' => new ProjectMemberResource($member)
         ]);
     }
 
@@ -75,10 +80,12 @@ class ProjectMemberController extends Controller
      */
     public function destroy(Project $project, int $userId): JsonResponse
     {
+        if (!Gate::allows('manage-members', $project)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $this->memberService->removeMember($project->id, $userId);
 
-        return response()->json([
-            'message' => 'Member removed successfully'
-        ]);
+        return response()->json(null, 204);
     }
 }

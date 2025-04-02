@@ -23,6 +23,7 @@ class Project extends Model
         'end_date',
         'status',
         'visibility',
+        'priority',
         'settings',
     ];
 

@@ -24,7 +24,7 @@ class ProjectController extends Controller
     /**
      * Display a listing of projects.
      */
-    public function index(Request $request): Response
+    public function index(Request $request): JsonResponse
     {
         // Get projects with pagination and optional filters
         $projects = $this->projectService->getProjects(
@@ -35,22 +35,27 @@ class ProjectController extends Controller
             $request->get('per_page', 10)
         );
 
-        return Inertia::render('Projects/Index', [
-            'projects' => $projects,
-            'filters' => $request->all(['status', 'visibility', 'category_id', 'search']),
+        return response()->json([
+            'data' => $projects->items(),
+            'meta' => [
+                'current_page' => $projects->currentPage(),
+                'last_page' => $projects->lastPage(),
+                'per_page' => $projects->perPage(),
+                'total' => $projects->total()
+            ]
         ]);
     }
 
     /**
      * Display the specified project.
      */
-    public function show(Project $project): Response
+    public function show(Project $project): JsonResponse
     {
         // Load necessary relationships
-        $project->load(['category', 'members.user', 'owner']);
+        $project->load(['category', 'members', 'owner']);
 
-        return Inertia::render('Projects/Show', [
-            'project' => $project
+        return response()->json([
+            'data' => $project
         ]);
     }
 
@@ -66,7 +71,7 @@ class ProjectController extends Controller
 
         return response()->json([
             'message' => 'Project created successfully',
-            'project' => $project
+            'data' => $project
         ], 201);
     }
 
@@ -82,7 +87,7 @@ class ProjectController extends Controller
 
         return response()->json([
             'message' => 'Project updated successfully',
-            'project' => $project
+            'data' => $project
         ]);
     }
 
@@ -95,7 +100,7 @@ class ProjectController extends Controller
 
         return response()->json([
             'message' => 'Project deleted successfully'
-        ]);
+        ], 204);
     }
 
     /**
@@ -107,7 +112,7 @@ class ProjectController extends Controller
 
         return response()->json([
             'message' => 'Project archived successfully',
-            'project' => $project
+            'data' => $project
         ]);
     }
 
@@ -120,7 +125,7 @@ class ProjectController extends Controller
 
         return response()->json([
             'message' => 'Project restored successfully',
-            'project' => $project
+            'data' => $project
         ]);
     }
 }
