@@ -51,7 +51,7 @@ export default function Navbar({
                       }
                       className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
                     >
-                      {user.name}
+                      {user?.name || 'Guest'}
 
                       <svg
                         className="-me-0.5 ms-2 h-4 w-4"
