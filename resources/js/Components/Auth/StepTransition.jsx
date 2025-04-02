@@ -1,34 +1,28 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import LoadingOverlay from '../LoadingOverlay';
+import LoadingOverlay from '../UI/LoadingOverlay';
 
-export default function StepTransition({
-    children,
-    step,
-    isLoading = false,
-    onNext,
-    onPrevious,
-}) {
-    return (
-        <div className="relative">
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={step}
-                    initial={{ x: step === 1 ? -300 : 300, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: step === 1 ? 300 : -300, opacity: 0 }}
-                    transition={{
-                        type: 'spring',
-                        stiffness: 260,
-                        damping: 20,
-                    }}
-                    drag={false}
-                    className="w-full"
-                >
-                    {children}
-                </motion.div>
-            </AnimatePresence>
+export default function StepTransition({ children, step, isLoading = false }) {
+  return (
+    <div className="relative">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={step}
+          initial={{ x: step === 1 ? -300 : 300, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: step === 1 ? 300 : -300, opacity: 0 }}
+          transition={{
+            type: 'spring',
+            stiffness: 260,
+            damping: 20,
+          }}
+          drag={false}
+          className="w-full"
+        >
+          {children}
+        </motion.div>
+      </AnimatePresence>
 
-            {isLoading && <LoadingOverlay />}
-        </div>
-    );
+      {isLoading && <LoadingOverlay />}
+    </div>
+  );
 }

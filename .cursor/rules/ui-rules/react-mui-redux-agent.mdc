@@ -1,0 +1,101 @@
+---
+description: This rule governs React, Material UI, and Redux Toolkit development practices across the entire project. It should be applied whenever: (1) Creating or modifying React components, (2) Implementing UI with Material UI, (3) Managing state with Redux Toolkit, (4) Setting up project structure, (5) Creating new features or components. The rule ensures consistent code structure, proper use of React patterns, MUI best practices, and Redux state management while maintaining code quality and performance.
+globs:
+alwaysApply: false
+---
+
+# React + MUI + Redux Toolkit Development Standards
+
+## Critical Rules
+
+### Project Structure
+- Follow the prescribed directory structure for organizing code
+- Place reusable UI components in `components/common`
+- Place feature-specific components in `components/features`
+- Keep Redux store setup and slices in `store` directory
+- Organize API services in `services` directory
+- Use proper file naming conventions (PascalCase for components)
+
+### JavaScript & React
+- Use function declarations for components, not arrow functions
+- Follow 2-space indentation and single quotes
+- Use PascalCase for components, camelCase for variables/functions
+- Handle errors at start of functions with early returns
+- Structure files with: exports first, subcomponents, helpers
+- Use named exports for components
+- Implement proper error handling with try/catch
+
+### Component Structure
+- Place styled components at the top of the file
+- Export main component first
+- Place subcomponents below main component
+- Use proper prop destructuring
+- Handle loading, error, and empty states
+- Implement proper TypeScript types/interfaces
+
+### Redux Toolkit
+- Use createSlice for all reducers
+- Organize by features with separate slices
+- Use async thunks for API calls
+- Keep state normalized for collections
+- Use selectors for state access
+- Prefer RTK Query for data fetching
+
+### MUI Implementation
+- Import components from specific paths
+- Use ThemeProvider at app root
+- Use sx prop for one-off styling
+- Create styled components for reusable styles
+- Use theme tokens instead of hardcoded values
+- Implement proper responsive designs
+- Ensure accessibility compliance
+
+### Performance
+- Use proper memoization hooks
+- Implement code splitting
+- Optimize images and assets
+- Use virtualization for long lists
+- Monitor Web Vitals metrics
+
+## Examples
+
+<example>
+// Good component structure
+import React from 'react'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import { styled } from '@mui/material/styles'
+
+const StyledBox = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderRadius: theme.shape.borderRadius
+}))
+
+export function UserProfile({ user }) {
+  if (!user) {
+    return <Typography>No user data</Typography>
+  }
+
+  return (
+    <StyledBox>
+      <Typography variant="h6">{user.name}</Typography>
+    </StyledBox>
+  )
+}
+</example>
+
+<example type="invalid">
+// Poor component structure
+import { Box, Typography } from '@mui/material'
+import React from 'react'
+
+const UserProfile = props => {
+  return (
+    <div style={{ padding: '16px' }}>
+      <h1>{props.user.name}</h1>
+    </div>
+  )
+}
+
+export default UserProfile
+</example>

@@ -1,11 +1,7 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Inertia\Inertia;
-use App\Models\Sprint;
-use App\Models\Task;
-use Illuminate\Http\Request;
 
 class SprintController extends Controller
 {
@@ -14,49 +10,49 @@ class SprintController extends Controller
         // Mock data for testing
         $sprints = [
             [
-                'id' => 1,
-                'name' => 'Sprint 1',
-                'start_date' => '2024-03-01',
-                'end_date' => '2024-03-14',
-                'status' => 'completed',
-                'total_points' => 50,
+                'id'               => 1,
+                'name'             => 'Sprint 1',
+                'start_date'       => '2024-03-01',
+                'end_date'         => '2024-03-14',
+                'status'           => 'completed',
+                'total_points'     => 50,
                 'completed_points' => 50,
-                'days_remaining' => 0
+                'days_remaining'   => 0,
             ],
             [
-                'id' => 2,
-                'name' => 'Sprint 2',
-                'start_date' => '2024-03-15',
-                'end_date' => '2024-03-28',
-                'status' => 'completed',
-                'total_points' => 45,
+                'id'               => 2,
+                'name'             => 'Sprint 2',
+                'start_date'       => '2024-03-15',
+                'end_date'         => '2024-03-28',
+                'status'           => 'completed',
+                'total_points'     => 45,
                 'completed_points' => 45,
-                'days_remaining' => 0
+                'days_remaining'   => 0,
             ],
             [
-                'id' => 3,
-                'name' => 'Sprint 3',
-                'start_date' => '2024-03-29',
-                'end_date' => '2024-04-11',
-                'status' => 'active',
-                'total_points' => 55,
+                'id'               => 3,
+                'name'             => 'Sprint 3',
+                'start_date'       => '2024-03-29',
+                'end_date'         => '2024-04-11',
+                'status'           => 'active',
+                'total_points'     => 55,
                 'completed_points' => 20,
-                'days_remaining' => 7
+                'days_remaining'   => 7,
             ],
             [
-                'id' => 4,
-                'name' => 'Sprint 4',
-                'start_date' => '2024-04-12',
-                'end_date' => '2024-04-25',
-                'status' => 'planned',
-                'total_points' => 40,
+                'id'               => 4,
+                'name'             => 'Sprint 4',
+                'start_date'       => '2024-04-12',
+                'end_date'         => '2024-04-25',
+                'status'           => 'planned',
+                'total_points'     => 40,
                 'completed_points' => 0,
-                'days_remaining' => 14
+                'days_remaining'   => 14,
             ],
         ];
 
         return Inertia::render('Sprints/Index', [
-            'sprints' => $sprints
+            'sprints' => $sprints,
         ]);
     }
 
@@ -64,88 +60,88 @@ class SprintController extends Controller
     {
         // Mock data for testing
         $sprint = [
-            'id' => $id,
-            'name' => 'Sprint 3',
-            'start_date' => '2024-03-29',
-            'end_date' => '2024-04-11',
-            'status' => 'active',
-            'total_points' => 55,
+            'id'               => $id,
+            'name'             => 'Sprint 3',
+            'start_date'       => '2024-03-29',
+            'end_date'         => '2024-04-11',
+            'status'           => 'active',
+            'total_points'     => 55,
             'completed_points' => 20,
-            'days_remaining' => 7
+            'days_remaining'   => 7,
         ];
 
         $tasks = [
             [
-                'id' => 1,
-                'title' => 'Setup Project Structure',
-                'description' => 'Initialize the project with Laravel and React',
-                'status' => 'done',
+                'id'           => 1,
+                'title'        => 'Setup Project Structure',
+                'description'  => 'Initialize the project with Laravel and React',
+                'status'       => 'done',
                 'story_points' => 5,
-                'assigned_to' => 'John Doe'
+                'assigned_to'  => 'John Doe',
             ],
             [
-                'id' => 2,
-                'title' => 'Create Authentication System',
-                'description' => 'Implement user login and registration',
-                'status' => 'done',
+                'id'           => 2,
+                'title'        => 'Create Authentication System',
+                'description'  => 'Implement user login and registration',
+                'status'       => 'done',
                 'story_points' => 8,
-                'assigned_to' => 'Jane Smith'
+                'assigned_to'  => 'Jane Smith',
             ],
             [
-                'id' => 3,
-                'title' => 'Design Database Schema',
-                'description' => 'Create database tables and relationships',
-                'status' => 'in_progress',
+                'id'           => 3,
+                'title'        => 'Design Database Schema',
+                'description'  => 'Create database tables and relationships',
+                'status'       => 'in_progress',
                 'story_points' => 5,
-                'assigned_to' => 'John Doe'
+                'assigned_to'  => 'John Doe',
             ],
             [
-                'id' => 4,
-                'title' => 'Implement Sprint Management',
-                'description' => 'Create sprint planning and tracking features',
-                'status' => 'todo',
+                'id'           => 4,
+                'title'        => 'Implement Sprint Management',
+                'description'  => 'Create sprint planning and tracking features',
+                'status'       => 'todo',
                 'story_points' => 13,
-                'assigned_to' => 'Jane Smith'
-            ]
+                'assigned_to'  => 'Jane Smith',
+            ],
         ];
 
         // Mock data for burndown chart
         $burndownData = [
-            'labels' => ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5'],
+            'labels'   => ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5'],
             'datasets' => [
                 [
-                    'label' => 'Ideal Burndown',
-                    'data' => [50, 40, 30, 20, 10],
+                    'label'       => 'Ideal Burndown',
+                    'data'        => [50, 40, 30, 20, 10],
                     'borderColor' => 'rgb(75, 192, 192)',
-                    'tension' => 0.1
+                    'tension'     => 0.1,
                 ],
                 [
-                    'label' => 'Actual Burndown',
-                    'data' => [50, 45, 35, 25, 20],
+                    'label'       => 'Actual Burndown',
+                    'data'        => [50, 45, 35, 25, 20],
                     'borderColor' => 'rgb(255, 99, 132)',
-                    'tension' => 0.1
-                ]
-            ]
+                    'tension'     => 0.1,
+                ],
+            ],
         ];
 
         // Mock data for velocity chart
         $velocityData = [
-            'labels' => ['Sprint 1', 'Sprint 2', 'Sprint 3', 'Sprint 4'],
+            'labels'   => ['Sprint 1', 'Sprint 2', 'Sprint 3', 'Sprint 4'],
             'datasets' => [
                 [
-                    'label' => 'Velocity',
-                    'data' => [20, 25, 18, 30],
-                    'borderColor' => 'rgb(53, 162, 235)',
+                    'label'           => 'Velocity',
+                    'data'            => [20, 25, 18, 30],
+                    'borderColor'     => 'rgb(53, 162, 235)',
                     'backgroundColor' => 'rgba(53, 162, 235, 0.5)',
-                ]
-            ]
+                ],
+            ],
         ];
 
         return Inertia::render('Sprints/Show', [
-            'sprint' => $sprint,
-            'tasks' => $tasks,
+            'sprint'       => $sprint,
+            'tasks'        => $tasks,
             'burndownData' => $burndownData,
-            'velocityData' => $velocityData
+            'velocityData' => $velocityData,
         ]);
     }
 }
