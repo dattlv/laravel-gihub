@@ -212,6 +212,7 @@ class ProjectService
      * @param int|null $categoryId
      * @param string|null $search
      * @param int $perPage
+     * @param int $userId
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function getProjects(
@@ -219,9 +220,18 @@ class ProjectService
         ?string $visibility = null,
         ?int $categoryId = null,
         ?string $search = null,
-        int $perPage = 10
+        int $perPage = 10,
+        int $userId
     ) {
         $query = Project::query();
+
+        // Only show projects where user is owner or member
+        $query->where(function($q) use ($userId) {
+            $q->where('owner_id', $userId)
+              ->orWhereHas('members', function($q) use ($userId) {
+                  $q->where('user_id', $userId);
+              });
+        });
 
         if ($status) {
             $query->where('status', $status);

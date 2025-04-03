@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
@@ -35,7 +36,8 @@ class ProjectController extends Controller
             $request->get('visibility'),
             $request->get('category_id'),
             $request->get('search'),
-            $request->get('per_page', 10)
+            $request->get('per_page', 10),
+            Auth::user()->id
         );
 
         return response()->json([
@@ -71,7 +73,7 @@ class ProjectController extends Controller
     {
         $project = $this->projectService->createProject(
             $request->validated(),
-            auth()->id()
+            Auth::user()->id
         );
 
         return response()->json([
