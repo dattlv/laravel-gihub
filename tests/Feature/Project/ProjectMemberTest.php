@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Project;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class ProjectMemberTest extends TestCase
 {
@@ -29,7 +30,7 @@ class ProjectMemberTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_owner_can_add_member()
     {
         $memberData = [
@@ -38,7 +39,7 @@ class ProjectMemberTest extends TestCase
         ];
 
         $response = $this->actingAs($this->owner)
-            ->postJson("/api/v1/projects/{$this->project->id}/members", $memberData);
+            ->postJson(route('api.v1.projects.members.store', $this->project), $memberData);
 
         $response->assertCreated()
             ->assertJsonStructure([
@@ -61,7 +62,7 @@ class ProjectMemberTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_owner_can_view_member_list()
     {
         // Add some members to the project
@@ -71,7 +72,7 @@ class ProjectMemberTest extends TestCase
         }
 
         $response = $this->actingAs($this->owner)
-            ->getJson("/api/v1/projects/{$this->project->id}/members");
+            ->getJson(route('api.v1.projects.members.index', $this->project));
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -90,7 +91,7 @@ class ProjectMemberTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_owner_can_update_member_role()
     {
         // Add member to project
@@ -101,7 +102,10 @@ class ProjectMemberTest extends TestCase
         ];
 
         $response = $this->actingAs($this->owner)
-            ->putJson("/api/v1/projects/{$this->project->id}/members/{$this->member->id}", $updateData);
+            ->putJson(route('api.v1.projects.members.update', [
+                'project' => $this->project,
+                'userId' => $this->member->id
+            ]), $updateData);
 
         $response->assertOk()
             ->assertJsonFragment($updateData);
@@ -113,14 +117,17 @@ class ProjectMemberTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function project_owner_can_remove_member()
     {
         // Add member to project
         $this->project->members()->attach($this->member->id, ['role' => 'member']);
 
         $response = $this->actingAs($this->owner)
-            ->deleteJson("/api/v1/projects/{$this->project->id}/members/{$this->member->id}");
+            ->deleteJson(route('api.v1.projects.members.destroy', [
+                'project' => $this->project,
+                'userId' => $this->member->id
+            ]));
 
         $response->assertNoContent();
 
@@ -130,7 +137,7 @@ class ProjectMemberTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function non_owner_cannot_manage_project_members()
     {
         $randomUser = User::factory()->create();
@@ -140,12 +147,12 @@ class ProjectMemberTest extends TestCase
         ];
 
         $response = $this->actingAs($randomUser)
-            ->postJson("/api/v1/projects/{$this->project->id}/members", $memberData);
+            ->postJson(route('api.v1.projects.members.store', $this->project), $memberData);
 
         $response->assertForbidden();
     }
 
-    /** @test */
+    #[Test]
     public function cannot_add_same_member_twice()
     {
         // Add member first time
@@ -157,13 +164,13 @@ class ProjectMemberTest extends TestCase
         ];
 
         $response = $this->actingAs($this->owner)
-            ->postJson("/api/v1/projects/{$this->project->id}/members", $memberData);
+            ->postJson(route('api.v1.projects.members.store', $this->project), $memberData);
 
         $response->assertUnprocessable()
             ->assertJsonValidationErrors(['user_id']);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_add_member_with_invalid_role()
     {
         $memberData = [
@@ -172,7 +179,7 @@ class ProjectMemberTest extends TestCase
         ];
 
         $response = $this->actingAs($this->owner)
-            ->postJson("/api/v1/projects/{$this->project->id}/members", $memberData);
+            ->postJson(route('api.v1.projects.members.store', $this->project), $memberData);
 
         $response->assertUnprocessable()
             ->assertJsonValidationErrors(['role']);

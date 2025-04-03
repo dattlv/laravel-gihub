@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Repositories\Eloquent\ProjectRepositoryEloquent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class ProjectRepositoryTest extends TestCase
 {
@@ -22,7 +23,7 @@ class ProjectRepositoryTest extends TestCase
         $this->repository = new ProjectRepositoryEloquent(new Project());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_projects_by_owner_id()
     {
         // Arrange
@@ -38,7 +39,7 @@ class ProjectRepositoryTest extends TestCase
         $this->assertTrue($result->every(fn ($project) => $project->owner_id === $owner->id));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_projects_by_category_id()
     {
         // Arrange
@@ -54,7 +55,7 @@ class ProjectRepositoryTest extends TestCase
         $this->assertTrue($result->every(fn ($project) => $project->category_id === $category->id));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_projects_by_status()
     {
         // Arrange
@@ -70,7 +71,7 @@ class ProjectRepositoryTest extends TestCase
         $this->assertTrue($result->every(fn ($project) => $project->status === $activeStatus));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_projects_by_visibility()
     {
         // Arrange
@@ -86,7 +87,7 @@ class ProjectRepositoryTest extends TestCase
         $this->assertTrue($result->every(fn ($project) => $project->visibility === $visibility));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_archive_a_project()
     {
         // Arrange
@@ -103,7 +104,7 @@ class ProjectRepositoryTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_restore_a_project()
     {
         // Arrange
@@ -120,7 +121,7 @@ class ProjectRepositoryTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_projects_for_member()
     {
         // Arrange

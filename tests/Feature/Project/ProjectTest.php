@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\ProjectCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class ProjectTest extends TestCase
 {
@@ -42,11 +43,11 @@ class ProjectTest extends TestCase
         ];
     }
 
-    /** @test */
+    #[Test]
     public function user_can_create_a_project()
     {
         $response = $this->actingAs($this->user)
-            ->postJson('/api/v1/projects', $this->projectData);
+            ->postJson(route('api.v1.projects.store'), $this->projectData);
 
         $response->assertCreated()
             ->assertJsonStructure([
@@ -68,14 +69,14 @@ class ProjectTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_view_project_list()
     {
         // Create some test projects
         Project::factory()->count(3)->create(['owner_id' => $this->user->id]);
 
         $response = $this->actingAs($this->user)
-            ->getJson('/api/v1/projects');
+            ->getJson(route('api.v1.projects.index'));
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -106,13 +107,13 @@ class ProjectTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_view_project_details()
     {
         $project = Project::factory()->create(['owner_id' => $this->user->id]);
 
         $response = $this->actingAs($this->user)
-            ->getJson("/api/v1/projects/{$project->id}");
+            ->getJson(route('api.v1.projects.show', $project));
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -135,7 +136,7 @@ class ProjectTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_update_project()
     {
         $project = Project::factory()->create(['owner_id' => $this->user->id]);
@@ -153,7 +154,7 @@ class ProjectTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)
-            ->putJson("/api/v1/projects/{$project->id}", $updatedData);
+            ->putJson(route('api.v1.projects.update', $project), $updatedData);
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -180,19 +181,19 @@ class ProjectTest extends TestCase
         ));
     }
 
-    /** @test */
+    #[Test]
     public function user_can_delete_project()
     {
         $project = Project::factory()->create(['owner_id' => $this->user->id]);
 
         $response = $this->actingAs($this->user)
-            ->deleteJson("/api/v1/projects/{$project->id}");
+            ->deleteJson(route('api.v1.projects.destroy', $project));
 
         $response->assertNoContent();
         $this->assertSoftDeleted('projects', ['id' => $project->id]);
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_create_project_with_invalid_data()
     {
         $invalidData = [
@@ -207,7 +208,7 @@ class ProjectTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)
-            ->postJson('/api/v1/projects', $invalidData);
+            ->postJson(route('api.v1.projects.store'), $invalidData);
 
         $response->assertUnprocessable()
             ->assertJsonValidationErrors([
@@ -231,7 +232,7 @@ class ProjectTest extends TestCase
         $this->assertEquals('Invalid priority level selected', $responseData['errors']['priority'][0]);
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_create_project_with_end_date_before_start_date()
     {
         $invalidData = array_merge($this->projectData, [
@@ -240,7 +241,7 @@ class ProjectTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->postJson('/api/v1/projects', $invalidData);
+            ->postJson(route('api.v1.projects.store'), $invalidData);
 
         $response->assertUnprocessable()
             ->assertJsonValidationErrors(['end_date'])
@@ -251,7 +252,7 @@ class ProjectTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_create_project_with_invalid_status_and_visibility()
     {
         $invalidData = array_merge($this->projectData, [
@@ -261,7 +262,7 @@ class ProjectTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->postJson('/api/v1/projects', $invalidData);
+            ->postJson(route('api.v1.projects.store'), $invalidData);
 
         $response->assertUnprocessable()
             ->assertJsonValidationErrors(['status', 'visibility', 'priority'])
@@ -274,7 +275,7 @@ class ProjectTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_create_project_with_invalid_settings()
     {
         $invalidData = array_merge($this->projectData, [
@@ -285,7 +286,7 @@ class ProjectTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->postJson('/api/v1/projects', $invalidData);
+            ->postJson(route('api.v1.projects.store'), $invalidData);
 
         $response->assertUnprocessable()
             ->assertJsonValidationErrors([
@@ -294,12 +295,12 @@ class ProjectTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function unauthorized_user_cannot_access_projects()
     {
         $project = Project::factory()->create(['owner_id' => $this->user->id]);
 
-        $response = $this->getJson("/api/v1/projects/{$project->id}");
+        $response = $this->getJson(route('api.v1.projects.show', $project));
         $response->assertUnauthorized();
     }
 }
