@@ -104,7 +104,7 @@ class ProjectMemberTest extends TestCase
         $response = $this->actingAs($this->owner)
             ->putJson(route('api.v1.projects.members.update', [
                 'project' => $this->project,
-                'userId' => $this->member->id
+                'member' => $this->member->id
             ]), $updateData);
 
         $response->assertOk()
@@ -126,7 +126,7 @@ class ProjectMemberTest extends TestCase
         $response = $this->actingAs($this->owner)
             ->deleteJson(route('api.v1.projects.members.destroy', [
                 'project' => $this->project,
-                'userId' => $this->member->id
+                'member' => $this->member->id
             ]));
 
         $response->assertNoContent();

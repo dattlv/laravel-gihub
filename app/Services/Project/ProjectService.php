@@ -36,7 +36,19 @@ class ProjectService
     {
         return DB::transaction(function () use ($data, $ownerId) {
             // Generate slug if not provided
-            $data['slug'] = $data['slug'] ?? Str::slug($data['name']);
+            if (!isset($data['slug'])) {
+                $baseSlug = Str::slug($data['name']);
+                $slug = $baseSlug;
+                $counter = 1;
+
+                // Keep incrementing counter until we find a unique slug
+                while (Project::where('slug', $slug)->exists()) {
+                    $counter++;
+                    $slug = "{$baseSlug}-{$counter}";
+                }
+
+                $data['slug'] = $slug;
+            }
             $data['owner_id'] = $ownerId;
 
             // Create project
@@ -72,7 +84,19 @@ class ProjectService
     {
         // Generate slug if name is updated
         if (isset($data['name']) && !isset($data['slug'])) {
-            $data['slug'] = Str::slug($data['name']);
+            $baseSlug = Str::slug($data['name']);
+            $slug = $baseSlug;
+            $counter = 1;
+
+            // Keep incrementing counter until we find a unique slug
+            while (Project::where('slug', $slug)
+                ->where('id', '!=', $projectId)
+                ->exists()) {
+                $counter++;
+                $slug = "{$baseSlug}-{$counter}";
+            }
+
+            $data['slug'] = $slug;
         }
 
         $project = $this->projectRepository->update($projectId, $data);

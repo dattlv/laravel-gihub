@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\SprintController;
 use Illuminate\Foundation\Application;
@@ -15,6 +16,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+
+    // Projects Routes
+    Route::resource('projects', ProjectController::class);
 
     Route::get('/sprints', [SprintController::class, 'index'])->name('sprints.index');
     Route::get('/sprints/{id}', [SprintController::class, 'show'])->name('sprints.show');

@@ -24,6 +24,7 @@ class UpdateProjectRequest extends FormRequest
     {
         return [
             'name' => ['sometimes', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255', Rule::unique('projects')->ignore($this->project)],
             'description' => ['nullable', 'string', 'max:1000'],
             'category_id' => ['sometimes', 'integer', 'exists:project_categories,id'],
             'start_date' => ['sometimes', 'date'],

@@ -22,9 +22,15 @@ class ProjectCategoryController extends Controller
     /**
      * Display a listing of project categories.
      */
-    public function index(): Response
+    public function index(Request $request): Response|JsonResponse
     {
         $categories = $this->categoryService->getCategoriesWithProjectCount();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'data' => $categories
+            ]);
+        }
 
         return Inertia::render('Projects/Categories/Index', [
             'categories' => $categories

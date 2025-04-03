@@ -156,7 +156,7 @@ class ProjectAuthorizationTest extends TestCase
 
         $response = $this->putJson(route('api.v1.projects.members.update', [
             'project' => $this->project,
-            'userId' => $this->owner->id
+            'member' => $this->owner->id
         ]), [
             'role' => 'member'
         ]);
@@ -171,7 +171,7 @@ class ProjectAuthorizationTest extends TestCase
 
         $response = $this->putJson(route('api.v1.projects.members.update', [
             'project' => $this->project,
-            'userId' => $this->admin->id
+            'member' => $this->admin->id
         ]), [
             'role' => 'member'
         ]);
@@ -185,7 +185,7 @@ class ProjectAuthorizationTest extends TestCase
         $this->actingAs($this->owner);
         $newOwner = User::factory()->create();
 
-        $response = $this->postJson(route('api.v1.projects.transfer-ownership', $this->project), [
+        $response = $this->putJson(route('api.v1.projects.transfer-ownership', $this->project), [
             'user_id' => $newOwner->id
         ]);
 
@@ -222,7 +222,7 @@ class ProjectAuthorizationTest extends TestCase
         $this->actingAs($this->owner);
         $nonExistentUserId = 99999;
 
-        $response = $this->postJson(route('api.v1.projects.transfer-ownership', $this->project), [
+        $response = $this->putJson(route('api.v1.projects.transfer-ownership', $this->project), [
             'user_id' => $nonExistentUserId
         ]);
 

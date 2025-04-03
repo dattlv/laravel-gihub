@@ -24,6 +24,7 @@ class StoreProjectRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255', 'unique:projects,slug'],
             'description' => ['nullable', 'string', 'max:1000'],
             'category_id' => ['required', 'integer', 'exists:project_categories,id'],
             'start_date' => ['required', 'date'],
