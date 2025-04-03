@@ -1,0 +1,232 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+# Project Architecture and Stack Information
+
+## Critical Rules
+
+### Project Overview
+- Project uses Laravel 12 as backend framework
+- React is used as frontend framework
+- Inertia.js connects Laravel with React
+- Project follows modern full-stack development practices
+
+### Backend (Laravel) Architecture
+- Authentication system with social login support (Google, Facebook, GitHub, GitLab)
+- Profile management with email verification
+- Database uses migrations and transactions
+- Testing with PHPUnit and DatabaseTransactions
+- MVC architecture with Controllers, Models, and Views
+- Secure password hashing and token management
+- Type hinting and strict types in PHP
+
+### React Directory Structure and File Organization
+
+#### Directory Structure Rules
+```
+resources/
+├── js/
+│   ├── Components/           # Shared components
+│   │   ├── UI/              # Generic UI components
+│   │   │   ├── Buttons/     # Button variations
+│   │   │   ├── Forms/       # Form elements
+│   │   │   ├── Layout/      # Layout components
+│   │   │   └── Data/        # Data display components
+│   │   ├── Project/         # Project specific components
+│   │   │   ├── Dashboard/   # Dashboard specific components
+│   │   │   ├── Sprint/      # Sprint related components
+│   │   │   └── Analytics/   # Analytics components
+│   │   └── Auth/           # Authentication components
+│   ├── Pages/              # Page components (follow route structure)
+│   │   ├── Auth/
+│   │   │   ├── Login.jsx
+│   │   │   ├── Register.jsx
+│   │   │   ├── ForgotPassword.jsx
+│   │   │   └── ResetPassword.jsx
+│   │   ├── Profile/
+│   │   │   ├── Show.jsx
+│   │   │   ├── Edit.jsx
+│   │   │   └── Settings/
+│   │   └── Sprints/
+│   │       ├── Index.jsx
+│   │       ├── Show.jsx
+│   │       ├── Create.jsx
+│   │       └── Edit.jsx
+│   ├── store/              # Redux store
+│   │   ├── index.js
+│   │   ├── reducers/
+│   │   └── actions/
+│   ├── features/           # Feature modules
+│   │   ├── authentication/
+│   │   ├── profile/
+│   │   └── sprints/
+│   ├── services/          # API services
+│   │   ├── api.js        # Base API configuration
+│   │   ├── auth.js
+│   │   └── sprints.js
+│   ├── types/            # TypeScript types
+│   │   ├── models/
+│   │   └── api/
+│   ├── hooks/            # Custom React hooks
+│   │   ├── useAuth.js
+│   │   ├── useForm.js
+│   │   └── useApi.js
+│   ├── Layouts/          # Layout components
+│   │   ├── App.jsx
+│   │   ├── Auth.jsx
+│   │   └── Guest.jsx
+│   └── utils/            # Utility functions
+│       ├── format.js
+│       ├── validation.js
+│       └── helpers.js
+├── css/                  # CSS files
+└── views/                # Laravel views
+```
+
+#### File Naming Conventions
+- Components: PascalCase (e.g., `Button.jsx`, `UserProfile.jsx`)
+- Hooks: camelCase, prefix with 'use' (e.g., `useAuth.js`, `useForm.js`)
+- Utils: camelCase (e.g., `format.js`, `validation.js`)
+- Pages: PascalCase, match route name (e.g., `Index.jsx`, `Show.jsx`)
+- Types: PascalCase, suffix with type (e.g., `UserType.ts`, `SprintInterface.ts`)
+
+#### Component File Structure
+```jsx
+// imports
+import React from 'react';
+import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+
+// types (if using TypeScript)
+interface Props {
+  // ...
+}
+
+// component
+export default function ComponentName({ prop1, prop2 }: Props) {
+  // hooks
+  const [state, setState] = useState();
+
+  // effects
+  useEffect(() => {
+    // ...
+  }, []);
+
+  // handlers
+  const handleEvent = () => {
+    // ...
+  };
+
+  // render
+  return (
+    // JSX
+  );
+}
+```
+
+#### Feature Module Structure
+```
+features/featureName/
+├── components/          # Feature specific components
+├── hooks/              # Feature specific hooks
+├── services/           # API services for this feature
+├── types/             # TypeScript types
+├── utils/             # Feature specific utilities
+└── index.ts           # Feature entry point
+```
+
+### File Location Rules
+- New components must be placed in appropriate directories based on their purpose:
+  + Generic UI components → `Components/UI/`
+  + Project-specific components → `Components/Project/`
+  + Authentication related → `Components/Auth/`
+- Pages must follow the route structure in `Pages/` directory
+- All API services must be in `services/` directory
+- All types must be in `types/` directory
+- All hooks must be in `hooks/` directory
+- All utilities must be in `utils/` directory
+
+### Code Organization Rules
+- Each feature should be self-contained in `features/` directory
+- Shared components should be in `Components/UI/`
+- Each page should have its own directory if it has multiple sub-components
+- Redux store files should be organized by feature
+- Types should be separated by domain (models, API, etc.)
+
+### Technology Stack
+- Backend:
+  + Laravel 12
+  + PHP 8.x
+  + MySQL/PostgreSQL
+  + PHPUnit for testing
+
+- Frontend:
+  + React.js
+  + Redux for state management
+  + TypeScript
+  + Inertia.js
+  + Vite as build tool
+  + TailwindCSS for styling
+
+### Key Components
+- UI Components:
+  + Buttons (Primary, Secondary, Danger)
+  + TextInput, Modal, Dropdown
+  + LoadingOverlay, Checkbox
+  + Navigation components
+  + Form components
+
+- Pages:
+  + Welcome
+  + Dashboard
+  + Auth pages
+  + Profile management
+  + Sprint management
+
+### Development Features
+- Code splitting with dynamic imports
+- Environment variables support
+- Progress bar for navigation
+- TypeScript integration
+- Hot module replacement
+- Asset bundling with Vite
+
+### Best Practices
+- Feature-based code organization
+- Reusable UI components
+- Custom React hooks
+- Type safety with TypeScript
+- Consistent layouts
+- Secure authentication
+- Database transaction management
+- Comprehensive testing
+
+## Examples
+
+<example>
+Creating a new sprint feature:
+```
+features/sprints/
+├── components/
+│   ├── SprintCard.jsx
+│   ├── SprintForm.jsx
+│   └── SprintList.jsx
+├── hooks/
+│   └── useSprint.js
+├── services/
+│   └── sprintApi.js
+├── types/
+│   └── SprintTypes.ts
+└── index.ts
+```
+</example>
+
+<example type="invalid">
+❌ Placing components in wrong directories:
+- Putting a generic Button component in `Components/Project/`
+- Creating feature-specific components outside their feature directory
+- Mixing page components with shared components
+</example>
