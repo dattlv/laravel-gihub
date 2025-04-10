@@ -11,7 +11,6 @@ import {
   Tabs,
   Tab,
   Breadcrumbs,
-  Link as MuiLink,
 } from '@mui/material';
 import { Link } from '@inertiajs/react';
 import PropTypes from 'prop-types';
@@ -92,7 +91,9 @@ const Show = ({ auth, sprint }) => {
                       </Typography>
                       <LinearProgress
                         variant="determinate"
-                        value={(sprint.completed_points / sprint.total_points) * 100}
+                        value={
+                          (sprint.completed_points / sprint.total_points) * 100
+                        }
                         sx={{ mt: 1 }}
                       />
                     </CardContent>

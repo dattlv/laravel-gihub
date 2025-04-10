@@ -51,7 +51,8 @@ export default function Projects({ auth }) {
     {
       id: 1,
       name: 'E-commerce Platform',
-      description: 'Building a modern e-commerce platform with React and Laravel',
+      description:
+        'Building a modern e-commerce platform with React and Laravel',
       status: 'In Progress',
       progress: 65,
       tasks: 24,
@@ -108,7 +109,11 @@ export default function Projects({ auth }) {
                     Manage and monitor your projects
                   </p>
                 </div>
-                <Button variant="contained" color="primary" startIcon={<AddIcon />}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<AddIcon />}
+                >
                   New Project
                 </Button>
               </div>
@@ -132,7 +137,10 @@ export default function Projects({ auth }) {
                         In Progress
                       </Typography>
                       <Typography variant="h5">
-                        {projects.filter(p => p.status === 'In Progress').length}
+                        {
+                          projects.filter(p => p.status === 'In Progress')
+                            .length
+                        }
                       </Typography>
                     </CardContent>
                   </Card>
@@ -204,7 +212,13 @@ export default function Projects({ auth }) {
                           />
                         </TableCell>
                         <TableCell>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 1,
+                            }}
+                          >
                             <LinearProgress
                               variant="determinate"
                               value={project.progress}
@@ -241,7 +255,10 @@ export default function Projects({ auth }) {
                   <EditIcon fontSize="small" sx={{ mr: 1 }} />
                   Edit
                 </MenuItem>
-                <MenuItem onClick={handleMenuClose} sx={{ color: 'error.main' }}>
+                <MenuItem
+                  onClick={handleMenuClose}
+                  sx={{ color: 'error.main' }}
+                >
                   <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
                   Delete
                 </MenuItem>
