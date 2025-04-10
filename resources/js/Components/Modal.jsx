@@ -4,6 +4,7 @@ import {
   Transition,
   TransitionChild,
 } from '@headlessui/react';
+import PropTypes from 'prop-types';
 
 export default function Modal({
   children,
@@ -63,3 +64,11 @@ export default function Modal({
     </Transition>
   );
 }
+
+Modal.propTypes = {
+  children: PropTypes.node.isRequired,
+  show: PropTypes.bool,
+  maxWidth: PropTypes.oneOf(['sm', 'md', 'lg', 'xl', '2xl']),
+  closeable: PropTypes.bool,
+  onClose: PropTypes.func,
+};
