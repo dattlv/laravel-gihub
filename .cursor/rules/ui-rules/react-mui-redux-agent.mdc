@@ -1,106 +1,76 @@
 ---
-description: 
-globs: 
-alwaysApply: false
----
----
-description: This rule governs React, Material UI, and Redux Toolkit development practices across the entire project. It should be applied whenever: (1) Creating or modifying React components, (2) Implementing UI with Material UI, (3) Managing state with Redux Toolkit, (4) Setting up project structure, (5) Creating new features or components. The rule ensures consistent code structure, proper use of React patterns, MUI best practices, and Redux state management while maintaining code quality and performance.
+description: This rule governs React development practices with Material-UI and Redux across the project. It should be applied whenever: (1) Planning or implementing new React features, (2) Modifying existing React components, (3) Setting up new dependencies, (4) Making architectural decisions about component structure and package usage. The rule ensures consistent development practices, efficient package usage, and maintainable code structure.
 globs:
 alwaysApply: false
 ---
 
-# React + MUI + Redux Toolkit Development Standards
+# React MUI Redux Development Guidelines
 
 ## Critical Rules
 
-### Project Structure
-- Follow the prescribed directory structure for organizing code
-- Place reusable UI components in `components/common`
-- Place feature-specific components in `components/features`
-- Keep Redux store setup and slices in `store` directory
-- Organize API services in `services` directory
-- Use proper file naming conventions (PascalCase for components)
+### Package Management and Analysis
+- ALWAYS analyze requirements thoroughly before implementation to identify potential existing packages that could reduce development effort
+- ALWAYS use yarn instead of npm for package management
+- Document any new package additions with clear justification in commit messages
 
-### JavaScript & React
-- Use function declarations for components, not arrow functions
-- Follow 2-space indentation and single quotes
-- Use PascalCase for components, camelCase for variables/functions
-- Handle errors at start of functions with early returns
-- Structure files with: exports first, subcomponents, helpers
-- Use named exports for components
-- Implement proper error handling with try/catch
+### File Structure and Types
+- Use .jsx extension for all React component files
+- Remove all TypeScript configurations and dependencies
+- Convert any existing .tsx files to .jsx
+- Remove types/ directory and all type definitions
+- Update build configurations to remove TypeScript support
 
-### Component Structure
-- Place styled components at the top of the file
-- Export main component first
-- Place subcomponents below main component
-- Use proper prop destructuring
-- Handle loading, error, and empty states
-- Implement proper TypeScript types/interfaces
+### Development Workflow
+- Before implementing new features:
+  1. Analyze requirements in detail
+  2. Research existing packages that could fulfill requirements
+  3. Document package selection rationale
+  4. Present package options if multiple viable solutions exist
+- Maintain consistent code style without TypeScript annotations
+- Use PropTypes for component prop validation instead of TypeScript interfaces
 
-### Redux Toolkit
-- Use createSlice for all reducers
-- Organize by features with separate slices
-- Use async thunks for API calls
-- Keep state normalized for collections
-- Use selectors for state access
-- Prefer RTK Query for data fetching
-
-### MUI Implementation
-- Import components from specific paths
-- Use ThemeProvider at app root
-- Use sx prop for one-off styling
-- Create styled components for reusable styles
-- Use theme tokens instead of hardcoded values
-- Implement proper responsive designs
-- Ensure accessibility compliance
-
-### Performance
-- Use proper memoization hooks
-- Implement code splitting
-- Optimize images and assets
-- Use virtualization for long lists
-- Monitor Web Vitals metrics
+### Package Installation
+- Use yarn commands exclusively:
+  - `yarn add [package]` for new dependencies
+  - `yarn add -D [package]` for dev dependencies
+  - `yarn remove [package]` for removing packages
+  - `yarn` to install all dependencies
 
 ## Examples
 
 <example>
-// Good component structure
-import React from 'react'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import { styled } from '@mui/material/styles'
+// Good practice - Using existing package for complex functionality
+// Instead of implementing a custom date picker:
+yarn add @mui/x-date-pickers
 
-const StyledBox = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderRadius: theme.shape.borderRadius
-}))
+// Component using the package
+import { DatePicker } from '@mui/x-date-pickers';
 
-export function UserProfile({ user }) {
-  if (!user) {
-    return <Typography>No user data</Typography>
-  }
-
+function BookingForm() {
   return (
-    <StyledBox>
-      <Typography variant="h6">{user.name}</Typography>
-    </StyledBox>
-  )
+    <DatePicker
+      label="Select Date"
+      onChange={handleDateChange}
+      renderInput={(params) => <TextField {...params} />}
+    />
+  );
 }
 </example>
 
 <example type="invalid">
-// Poor component structure
-import { Box, Typography } from '@mui/material'
-import React from 'react'
-
-const UserProfile = props => {
-  return (
-    <div style={{ padding: '16px' }}>
-      <h1>{props.user.name}</h1>
-    </div>
-  )
+// Bad practice - Not utilizing existing packages
+// Implementing custom date picker from scratch
+class CustomDatePicker extends React.Component {
+  // Complex custom implementation
+  // Reinventing the wheel instead of using @mui/x-date-pickers
 }
 
-export default UserProfile
+// Bad practice - Using npm instead of yarn
+npm install some-package
+
+// Bad practice - Using TypeScript
+interface Props {
+  date: Date;
+  onChange: (date: Date) => void;
+}
 </example>
