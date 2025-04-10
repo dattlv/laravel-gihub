@@ -25,7 +25,7 @@ function TabPanel({ children, value, index, ...other }) {
   );
 }
 
-export default function Show({ project }) {
+export default function Show({ auth, project }) {
   const [activeTab, setActiveTab] = useState(0);
   const [searchQuery] = useState('');
 
@@ -34,66 +34,79 @@ export default function Show({ project }) {
   };
 
   return (
-    <AuthenticatedLayout>
+    <AuthenticatedLayout
+      user={auth.user}
+      header={
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold leading-tight text-gray-800">
+            {project?.name || 'Project Details'}
+          </h2>
+          <Breadcrumbs
+            separator={<NavigateNextIcon fontSize="small" />}
+            aria-label="breadcrumb"
+            sx={{ fontSize: '13px' }}
+          >
+            <Link href="/dashboard" className="no-underline">
+              <Stack direction="row" alignItems="center" spacing={0.5}>
+                <HomeIcon fontSize="small" sx={{ fontSize: 16 }} />
+                <Typography color="text.primary" fontSize="13px">
+                  Home
+                </Typography>
+              </Stack>
+            </Link>
+            <Link href="/projects" className="no-underline">
+              <Stack direction="row" alignItems="center" spacing={0.5}>
+                <DashboardIcon fontSize="small" sx={{ fontSize: 16 }} />
+                <Typography color="text.primary" fontSize="13px">
+                  Projects
+                </Typography>
+              </Stack>
+            </Link>
+            <Typography color="text.secondary" fontSize="13px">
+              {project?.name || 'Project Details'}
+            </Typography>
+          </Breadcrumbs>
+        </div>
+      }
+    >
       <Head title={project?.name || 'Project Details'} />
 
-      <Box sx={{ p: 3, background: '#fff' }}>
-        {/* Breadcrumbs */}
-        <Breadcrumbs
-          separator={<NavigateNextIcon fontSize="small" />}
-          aria-label="breadcrumb"
-          sx={{ mb: 2, fontSize: '13px' }}
-        >
-          <Link href="/dashboard" className="no-underline">
-            <Stack direction="row" alignItems="center" spacing={0.5}>
-              <HomeIcon fontSize="small" sx={{ fontSize: 16 }} />
-              <Typography color="text.primary" fontSize="13px">
-                Home
-              </Typography>
-            </Stack>
-          </Link>
-          <Link href="/projects" className="no-underline">
-            <Stack direction="row" alignItems="center" spacing={0.5}>
-              <DashboardIcon fontSize="small" sx={{ fontSize: 16 }} />
-              <Typography color="text.primary" fontSize="13px">
-                Projects
-              </Typography>
-            </Stack>
-          </Link>
-          <Typography color="text.secondary" fontSize="13px">
-            {project?.name || 'Project Details'}
-          </Typography>
-        </Breadcrumbs>
+      <div className="py-12">
+        <div className="mx-auto ax-w-7xl sm:px-6 lg:px-8">
+          <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+            <div className="p-6">
+              {/* Tabs */}
+              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <Tabs value={activeTab} onChange={handleTabChange}>
+                  <Tab
+                    sx={{ fontSize: '13px', padding: '10px 15px' }}
+                    label="Backlog"
+                  />
+                  <Tab
+                    sx={{ fontSize: '13px', padding: '10px 15px' }}
+                    label="Sprint"
+                  />
+                  <Tab
+                    sx={{ fontSize: '13px', padding: '10px 15px' }}
+                    label="Timeline"
+                  />
+                </Tabs>
+              </Box>
 
-        {/* Tabs */}
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={activeTab} onChange={handleTabChange}>
-            <Tab
-              sx={{ fontSize: '13px', padding: '10px 15px' }}
-              label="Backlog"
-            />
-            <Tab
-              sx={{ fontSize: '13px', padding: '10px 15px' }}
-              label="Sprint"
-            />
-            <Tab
-              sx={{ fontSize: '13px', padding: '10px 15px' }}
-              label="Timeline"
-            />
-          </Tabs>
-        </Box>
-
-        {/* Tab Panels */}
-        <TabPanel value={activeTab} index={0}>
-          <ProjectBacklog searchQuery={searchQuery} />
-        </TabPanel>
-        <TabPanel value={activeTab} index={1}>
-          <ProjectSprint searchQuery={searchQuery} />
-        </TabPanel>
-        <TabPanel value={activeTab} index={2}>
-          <ProjectTimeline searchQuery={searchQuery} />
-        </TabPanel>
-      </Box>
+              {/* Tab Panels */}
+              <TabPanel value={activeTab} index={0}>
+                <ProjectBacklog searchQuery={searchQuery} />
+              </TabPanel>
+              <TabPanel value={activeTab} index={1}>
+                <ProjectSprint searchQuery={searchQuery} />
+              </TabPanel>
+              <TabPanel value={activeTab} index={2}>
+                <ProjectTimeline searchQuery={searchQuery} />
+              </TabPanel>
+            </div>
+          </div>
+        </div>
+      </div>
     </AuthenticatedLayout>
   );
 }

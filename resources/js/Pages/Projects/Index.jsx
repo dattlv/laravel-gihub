@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {
   Box,
   Button,
@@ -26,9 +27,8 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
 } from '@mui/icons-material';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
-export default function Projects() {
+export default function Projects({ auth }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [, setSelectedProject] = useState(null);
 
@@ -51,8 +51,7 @@ export default function Projects() {
     {
       id: 1,
       name: 'E-commerce Platform',
-      description:
-        'Building a modern e-commerce platform with React and Laravel',
+      description: 'Building a modern e-commerce platform with React and Laravel',
       status: 'In Progress',
       progress: 65,
       tasks: 24,
@@ -85,158 +84,172 @@ export default function Projects() {
   };
 
   return (
-    <AuthenticatedLayout>
+    <AuthenticatedLayout
+      user={auth.user}
+      header={
+        <h2 className="text-xl font-semibold leading-tight text-gray-800">
+          Projects
+        </h2>
+      }
+    >
       <Head title="Projects" />
 
-      <Box sx={{ p: 3 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mb: 3,
-          }}
-        >
-          <Typography variant="h4" component="h1">
-            Projects
-          </Typography>
-          <Button variant="contained" color="primary" startIcon={<AddIcon />}>
-            New Project
-          </Button>
-        </Box>
+      <div className="py-12">
+        <div className="mx-auto ax-w-7xl sm:px-6 lg:px-8">
+          <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+            <div className="p-6">
+              {/* Header with Action Button */}
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    All Projects
+                  </h2>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Manage and monitor your projects
+                  </p>
+                </div>
+                <Button variant="contained" color="primary" startIcon={<AddIcon />}>
+                  New Project
+                </Button>
+              </div>
 
-        <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                  Total Projects
-                </Typography>
-                <Typography variant="h5">{projects.length}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                  In Progress
-                </Typography>
-                <Typography variant="h5">
-                  {projects.filter(p => p.status === 'In Progress').length}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                  Completed
-                </Typography>
-                <Typography variant="h5">
-                  {projects.filter(p => p.status === 'Completed').length}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                  Total Tasks
-                </Typography>
-                <Typography variant="h5">
-                  {projects.reduce((acc, curr) => acc + curr.tasks, 0)}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Project Name</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Progress</TableCell>
-                <TableCell>Tasks</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {projects.map(project => (
-                <TableRow
-                  key={project.id}
-                  sx={{
-                    cursor: 'pointer',
-                    '&:hover': {
-                      backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                    },
-                  }}
-                >
-                  <TableCell>
-                    <Link
-                      href={`/projects/${project.id}`}
-                      className="text-decoration-none"
-                    >
-                      {project.name}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{project.description}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={project.status}
-                      color={getStatusColor(project.status)}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <LinearProgress
-                        variant="determinate"
-                        value={project.progress}
-                        sx={{ flexGrow: 1 }}
-                      />
-                      <Typography variant="body2">
-                        {project.progress}%
+              {/* Overview Stats */}
+              <Grid container spacing={3} sx={{ mb: 4 }}>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Card>
+                    <CardContent>
+                      <Typography color="textSecondary" gutterBottom>
+                        Total Projects
                       </Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    {project.completedTasks}/{project.tasks}
-                  </TableCell>
-                  <TableCell align="right">
-                    <IconButton
-                      size="small"
-                      onClick={e => handleMenuClick(e, project)}
-                    >
-                      <MoreVertIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                      <Typography variant="h5">{projects.length}</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Card>
+                    <CardContent>
+                      <Typography color="textSecondary" gutterBottom>
+                        In Progress
+                      </Typography>
+                      <Typography variant="h5">
+                        {projects.filter(p => p.status === 'In Progress').length}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Card>
+                    <CardContent>
+                      <Typography color="textSecondary" gutterBottom>
+                        Completed
+                      </Typography>
+                      <Typography variant="h5">
+                        {projects.filter(p => p.status === 'Completed').length}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Card>
+                    <CardContent>
+                      <Typography color="textSecondary" gutterBottom>
+                        Total Tasks
+                      </Typography>
+                      <Typography variant="h5">
+                        {projects.reduce((acc, curr) => acc + curr.tasks, 0)}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
 
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem onClick={handleMenuClose}>
-            <EditIcon fontSize="small" sx={{ mr: 1 }} />
-            Edit
-          </MenuItem>
-          <MenuItem onClick={handleMenuClose} sx={{ color: 'error.main' }}>
-            <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
-            Delete
-          </MenuItem>
-        </Menu>
-      </Box>
+              {/* Projects Table */}
+              <TableContainer component={Paper} sx={{ mt: 3 }}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Project Name</TableCell>
+                      <TableCell>Description</TableCell>
+                      <TableCell>Status</TableCell>
+                      <TableCell>Progress</TableCell>
+                      <TableCell>Tasks</TableCell>
+                      <TableCell align="right">Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {projects.map(project => (
+                      <TableRow
+                        key={project.id}
+                        sx={{
+                          cursor: 'pointer',
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                          },
+                        }}
+                      >
+                        <TableCell>
+                          <Link
+                            href={`/projects/${project.id}`}
+                            className="text-decoration-none"
+                          >
+                            {project.name}
+                          </Link>
+                        </TableCell>
+                        <TableCell>{project.description}</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={project.status}
+                            color={getStatusColor(project.status)}
+                            size="small"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <LinearProgress
+                              variant="determinate"
+                              value={project.progress}
+                              sx={{ flexGrow: 1 }}
+                            />
+                            <Typography variant="body2">
+                              {project.progress}%
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        <TableCell>
+                          {project.completedTasks}/{project.tasks}
+                        </TableCell>
+                        <TableCell align="right">
+                          <IconButton
+                            size="small"
+                            onClick={e => handleMenuClick(e, project)}
+                          >
+                            <MoreVertIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+              >
+                <MenuItem onClick={handleMenuClose}>
+                  <EditIcon fontSize="small" sx={{ mr: 1 }} />
+                  Edit
+                </MenuItem>
+                <MenuItem onClick={handleMenuClose} sx={{ color: 'error.main' }}>
+                  <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
+                  Delete
+                </MenuItem>
+              </Menu>
+            </div>
+          </div>
+        </div>
+      </div>
     </AuthenticatedLayout>
   );
 }

@@ -3,22 +3,35 @@ import { Head } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 
 const SprintIndex = ({ auth, sprints }) => (
-  <AuthenticatedLayout user={auth.user}>
+  <AuthenticatedLayout
+    user={auth.user}
+    header={
+      <h2 className="text-xl font-semibold leading-tight text-gray-800">
+        Sprint Management
+      </h2>
+    }
+  >
     <Head title="Sprint Management" />
 
     <div className="py-12">
-      <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-3xl font-semibold text-gray-900">Sprints</h1>
-          <button className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-            Create New Sprint
-          </button>
-        </div>
-
-        {/* Sprint List */}
+      <div className="mx-auto ax-w-7xl sm:px-6 lg:px-8">
         <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
           <div className="p-6">
+            {/* Header */}
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  All Sprints
+                </h2>
+                <p className="mt-1 text-sm text-gray-500">
+                  Manage and track your sprint progress
+                </p>
+              </div>
+              <button className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                Create New Sprint
+              </button>
+            </div>
+
             {/* Sprint Filter */}
             <div className="mb-6 flex gap-4">
               <button className="rounded bg-blue-100 px-4 py-2 text-blue-700 hover:bg-blue-200">
