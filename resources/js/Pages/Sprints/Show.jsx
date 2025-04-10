@@ -1,11 +1,10 @@
-import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import SprintBoard from '@/Components/UI/SprintBoard';
 import SprintMetrics from '@/Components/UI/SprintMetrics';
 
 const SprintShow = ({ auth, sprint, tasks, burndownData, velocityData }) => {
-  const handleDragEnd = ({ _taskId, _sourceStatus, _destinationStatus }) => {
+  const handleDragEnd = ({}) => {
     // TODO: Implement task status update logic
   };
 

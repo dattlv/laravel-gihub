@@ -1,9 +1,8 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\SocialiteController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SprintController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -15,6 +14,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+
+    Route::get('/projects', function () {
+        return Inertia::render('Projects/Index');
+    })->name('projects.index');
+
+    Route::get('/projects/{id}', function ($id) {
+        return Inertia::render('Projects/Show', [
+            'project' => [
+                'id'   => $id,
+                'name' => 'DXTM01', // Replace with actual project data
+            ],
+        ]);
+    })->name('projects.show');
 
     Route::get('/sprints', [SprintController::class, 'index'])->name('sprints.index');
     Route::get('/sprints/{id}', [SprintController::class, 'show'])->name('sprints.show');
@@ -32,4 +44,4 @@ Route::get('/auth/{provider}/redirect', [SocialiteController::class, 'redirect']
 Route::get('/auth/{provider}/callback', [SocialiteController::class, 'callback'])
     ->name('socialite.callback');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

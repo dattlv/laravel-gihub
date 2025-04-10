@@ -19,7 +19,6 @@ export default function PasswordStep({ user, canResetPassword }) {
     post(route('login'), {
       onFinish: () => reset('password'),
       onError: errors => {
-        console.log(errors);
         setError(
           'password',
           errors.password ||
