@@ -33,7 +33,7 @@
         "eslint-import-resolver-alias": "^1.1.2",
         "eslint-plugin-import": "^2.31.0",
         "eslint-plugin-jsx-a11y": "^6.10.2",
-        "eslint-plugin-prettier": "^5.2.5",
+        "eslint-plugin-prettier": "^5.2.6",
         "eslint-plugin-react": "^7.37.4",
         "eslint-plugin-react-hooks": "^5.2.0",
         "globals": "^16.0.0",
@@ -52,6 +52,7 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
+        "@hello-pangea/dnd": "^18.0.1",
         "@mui/icons-material": "^7.0.1",
         "@mui/material": "^7.0.1",
         "@mui/styled-engine-sc": "^7.0.1",

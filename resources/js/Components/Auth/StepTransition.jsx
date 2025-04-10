@@ -1,13 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import LoadingOverlay from '../LoadingOverlay';
 
-export default function StepTransition({
-  children,
-  step,
-  isLoading = false,
-  _onNext,
-  _onPrevious,
-}) {
+export default function StepTransition({ children, step, isLoading = false }) {
   return (
     <div className="relative">
       <AnimatePresence mode="wait">

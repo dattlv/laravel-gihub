@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from '@inertiajs/react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 
@@ -66,7 +65,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
     },
     {
       name: 'Projects',
-      href: '#',
+      href: route('projects.index'),
       icon: (
         <svg
           className="h-6 w-6"

@@ -45,12 +45,9 @@ export default function Login({ status, canResetPassword }) {
         email: e.target.email.value,
         password: e.target.password.value,
       };
-      const result = await loginMutation(credentials).unwrap();
-      // Handle successful login
-      console.log('Login successful:', result);
+      await loginMutation(credentials).unwrap();
     } catch (err) {
-      // Handle error
-      console.error('Failed to login:', err);
+      return err;
     }
   };
 
