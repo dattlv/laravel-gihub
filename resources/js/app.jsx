@@ -6,55 +6,9 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
-import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
+import ThemeProvider from './utils/ThemeContext';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
-
-// Create a custom MUI theme with the specified font family
-const theme = createTheme({
-  typography: {
-    fontFamily: [
-      '-apple-system',
-      'system-ui',
-      '"Segoe UI"',
-      'Roboto',
-      'Noto',
-      'Oxygen-Sans',
-      'Ubuntu',
-      'Cantrell',
-      '"Helvetica Neue"',
-      'sans-serif',
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
-    ].join(','),
-  },
-  components: {
-    MuiCssBaseline: {
-      styleOverrides: {
-        body: {
-          fontFamily: [
-            '-apple-system',
-            'system-ui',
-            '"Segoe UI"',
-            'Roboto',
-            'Noto',
-            'Oxygen-Sans',
-            'Ubuntu',
-            'Cantrell',
-            '"Helvetica Neue"',
-            'sans-serif',
-            '"Apple Color Emoji"',
-            '"Segoe UI Emoji"',
-            '"Segoe UI Symbol"',
-          ].join(','),
-          WebkitFontSmoothing: 'antialiased',
-          MozOsxFontSmoothing: 'grayscale',
-        },
-      },
-    },
-  },
-});
 
 createInertiaApp({
   title: title => `${title} - ${appName}`,
@@ -68,8 +22,7 @@ createInertiaApp({
 
     root.render(
       <Provider store={store}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
+        <ThemeProvider>
           <App {...props} />
         </ThemeProvider>
       </Provider>,

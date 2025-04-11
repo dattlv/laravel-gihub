@@ -18,3 +18,249 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Dark mode styles */
+html[data-color-scheme='dark'] {
+  color-scheme: dark;
+}
+
+/* Dark mode overrides for Tailwind components */
+html[data-color-scheme='dark'] {
+  /* Background colors */
+  .bg-white {
+    background-color: #1f2937;
+  }
+
+  .bg-gray-50 {
+    background-color: #111827;
+  }
+
+  .bg-gray-100 {
+    background-color: #1f2937;
+  }
+
+  /* Text colors */
+  .text-gray-500 {
+    color: #9ca3af;
+  }
+
+  .text-gray-600 {
+    color: #d1d5db;
+  }
+
+  .text-gray-700 {
+    color: #e5e7eb;
+  }
+
+  .text-gray-800 {
+    color: #f3f4f6;
+  }
+
+  .text-gray-900 {
+    color: #f9fafb;
+  }
+
+  /* Border colors */
+  .border-gray-100 {
+    border-color: #374151;
+  }
+
+  .border-gray-200 {
+    border-color: #4b5563;
+  }
+
+  .border-gray-300 {
+    border-color: #6b7280;
+  }
+
+  /* Hover states */
+  .hover\:bg-gray-100:hover {
+    background-color: #374151;
+  }
+
+  /* ApplicationLogo SVG fill */
+  .fill-current.text-gray-800 {
+    fill: #f3f4f6;
+  }
+
+  /* Shadow adjustments */
+  .shadow,
+  .shadow-sm,
+  .shadow-md {
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.4),
+      0 2px 4px -1px rgba(0, 0, 0, 0.36);
+  }
+
+  /* Input fields */
+  input,
+  textarea,
+  select {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f3f4f6;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #9ca3af;
+  }
+
+  /* Ring colors */
+  .ring-black {
+    --tw-ring-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .ring-opacity-5 {
+    --tw-ring-opacity: 0.2;
+  }
+
+  /* Sidebar specific dark mode styles */
+  .bg-gray-800 {
+    background-color: #111827;
+  }
+
+  .bg-gray-900 {
+    background-color: #0f172a;
+  }
+
+  .border-gray-700 {
+    border-color: #374151;
+  }
+
+  .border-gray-600 {
+    border-color: #4b5563;
+  }
+
+  /* Fixed navbar dark mode adjustments */
+  .MuiAppBar-root {
+    background-color: #1f2937 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  /* Dark mode border adjustments */
+  .border-r {
+    border-color: #374151;
+  }
+
+  /* Dark mode fab button */
+  .MuiFab-root {
+    background-color: #1f2937 !important;
+    color: #e5e7eb !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  .MuiFab-root:hover {
+    background-color: #374151 !important;
+  }
+}
+
+/* Theme transition effects */
+.transition-theme {
+  transition-property: color, background-color, border-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* Layout Transitions */
+.MuiAppBar-root {
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s !important;
+}
+
+.border-r {
+  transition: border-color 0.3s ease;
+}
+
+/* Main content padding for fixed navbar */
+.pt-16 {
+  padding-top: 64px; /* Match Navbar height */
+}
+
+/* Theme toggle button animation */
+.MuiIconButton-root {
+  transform-origin: center;
+  transition:
+    transform 0.3s,
+    background-color 0.3s,
+    color 0.3s !important;
+}
+
+.MuiIconButton-root:hover {
+  transform: rotate(15deg);
+}
+
+/* Drawer Animation Improvements */
+.MuiDrawer-root .MuiDrawer-paper {
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  will-change: width;
+  overflow-x: hidden;
+}
+
+/* List item hover effects */
+.MuiListItemButton-root {
+  transition: all 0.2s ease-in-out !important;
+}
+
+.MuiListItemButton-root:hover {
+  transform: translateX(4px);
+}
+
+/* Main content area transition */
+.MuiBox-root[component='main'] {
+  transition:
+    margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Toggle button animations */
+.MuiFab-root {
+  transition:
+    left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.2s ease,
+    transform 0.3s ease !important;
+  will-change: left, transform;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+}
+
+.MuiFab-root:hover {
+  transform: scale(1.1) !important;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.25) !important;
+}
+
+.MuiFab-root svg {
+  transition: transform 0.3s ease;
+}
+
+.MuiFab-root:active {
+  transform: scale(0.95) !important;
+}
+
+/* Custom scrollbar for both light and dark mode */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html[data-color-scheme='light'] ::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 4px;
+}
+
+html[data-color-scheme='light'] ::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db;
+}
+
+html[data-color-scheme='dark'] ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+html[data-color-scheme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}

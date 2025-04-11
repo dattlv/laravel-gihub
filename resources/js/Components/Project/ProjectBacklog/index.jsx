@@ -30,6 +30,8 @@ import {
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { useTheme } from '../../../utils/ThemeContext';
+import { darkTheme } from '../../../utils/theme';
 
 // Styled components
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -84,12 +86,12 @@ const IssueItem = memo(function IssueItem({
   index,
   sprintId,
   handleStatusChange,
+  mode,
 }) {
   if (issue === 'create') {
     return (
       <TableRow
         sx={{
-          backgroundColor: '#F7F8FA',
           height: 1,
           '& td': {
             border: 'none',
@@ -102,6 +104,7 @@ const IssueItem = memo(function IssueItem({
             startIcon={<AddIcon fontSize="small" />}
             size="small"
             sx={{
+              background: mode === 'dark' ? '#6D28D9' : '#F7F8FA',
               textTransform: 'none',
               color: 'text.secondary',
               padding: '2px 8px',
@@ -118,26 +121,35 @@ const IssueItem = memo(function IssueItem({
       </TableRow>
     );
   }
-
   const getStatusBgColor = status => {
     switch (status) {
       case 'DONE':
-        return '#e8f5e9'; // light green
+        return mode === 'light'
+          ? '#e8f5e9'
+          : darkTheme.palette.background.success;
       case 'IN PROGRESS':
-        return '#e3f2fd'; // light blue
+        return mode === 'light'
+          ? '#e3f2fd'
+          : darkTheme.palette.background.primary;
       default:
-        return '#f5f5f5'; // light gray
+        return mode === 'light'
+          ? '#f5f5f5'
+          : darkTheme.palette.background.subtle;
     }
   };
 
   const getStatusTextColor = status => {
     switch (status) {
       case 'DONE':
-        return 'success.dark';
+        return mode === 'light'
+          ? darkTheme.palette.background.success
+          : 'white';
       case 'IN PROGRESS':
-        return 'primary.dark';
+        return mode === 'light'
+          ? darkTheme.palette.background.primary
+          : 'white';
       default:
-        return 'text.secondary';
+        return mode === 'light' ? darkTheme.palette.text.disabled : 'white';
     }
   };
 
@@ -386,6 +398,7 @@ const SprintHeader = memo(function SprintHeader({
 
 // Main Component
 export default function ProjectBacklog({ searchQuery }) {
+  const { mode } = useTheme();
   const [expandedSprints, setExpandedSprints] = useState({
     'Scrum Sprint 1': true,
     'Scrum Sprint 2': true,
@@ -568,6 +581,19 @@ export default function ProjectBacklog({ searchQuery }) {
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
           background-color: white !important;
         }
+        /* Fix scroll issue when dragging between sprints */
+        .MuiCollapse-root {
+          overflow: visible !important;
+        }
+        .MuiPaper-root-MuiTableContainer-root {
+          overflow: visible !important;
+        }
+        /* Make placeholder take same space as the dragged item */
+        [data-rbd-placeholder-context-id] {
+          opacity: 0.2 !important;
+          min-height: 58px !important;
+          transition: all 0.2s ease !important;
+        }
       `;
       document.head.appendChild(styleTag);
     }
@@ -619,7 +645,7 @@ export default function ProjectBacklog({ searchQuery }) {
               sx={{
                 p: 1,
                 borderRadius: 4,
-                bgcolor: '#F7F8FA',
+                bgcolor: mode === 'light' ? '#F7F8FA' : '#FFFFFF10',
               }}
             >
               <SprintHeader
@@ -663,11 +689,13 @@ export default function ProjectBacklog({ searchQuery }) {
                                   index={index}
                                   sprintId={sprint.id}
                                   handleStatusChange={handleStatusChange}
+                                  mode={mode}
                                 />
                               ))}
                               <IssueItem
                                 issue="create"
                                 index={filteredIssues.length}
+                                mode={mode}
                               />
                               {providedDroppable.placeholder}
                             </TableBody>

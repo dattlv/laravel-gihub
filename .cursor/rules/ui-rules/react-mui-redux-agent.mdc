@@ -1,76 +1,193 @@
 ---
-description: This rule governs React development practices with Material-UI and Redux across the project. It should be applied whenever: (1) Planning or implementing new React features, (2) Modifying existing React components, (3) Setting up new dependencies, (4) Making architectural decisions about component structure and package usage. The rule ensures consistent development practices, efficient package usage, and maintainable code structure.
+description: Rule này quản lý các quy tắc phát triển React với Material-UI và Redux trong toàn bộ dự án. Rule nên được áp dụng khi: (1) Lập kế hoạch hoặc triển khai tính năng React mới, (2) Chỉnh sửa các component React hiện có, (3) Thiết lập các dependency mới, (4) Đưa ra quyết định về cấu trúc component và việc sử dụng package. Rule đảm bảo tính nhất quán trong phát triển, sử dụng package hiệu quả và cấu trúc code dễ bảo trì.
 globs:
 alwaysApply: false
 ---
 
-# React MUI Redux Development Guidelines
+# Quy Tắc Phát Triển React với Material-UI và Redux
 
-## Critical Rules
+## Quy Tắc Quan Trọng
 
-### Package Management and Analysis
-- ALWAYS analyze requirements thoroughly before implementation to identify potential existing packages that could reduce development effort
-- ALWAYS use yarn instead of npm for package management
-- Document any new package additions with clear justification in commit messages
+### Quản Lý Package
+- PHẢI sử dụng yarn thay vì npm cho tất cả các hoạt động quản lý package
+- PHẢI phân tích các package hiện có trước khi thêm dependency mới
+- PHẢI kiểm tra xem các package đã được cài đặt trước khi triển khai tính năng mới
+- KHÔNG được cài đặt các package trùng lặp về chức năng
+- PHẢI sử dụng các lệnh cấu trúc yarn (yarn add, yarn remove, yarn upgrade)
 
-### File Structure and Types
-- Use .jsx extension for all React component files
-- Remove all TypeScript configurations and dependencies
-- Convert any existing .tsx files to .jsx
-- Remove types/ directory and all type definitions
-- Update build configurations to remove TypeScript support
+### Cấu Trúc File và Component
+- PHẢI sử dụng các file .jsx thay vì .tsx (không sử dụng TypeScript)
+- PHẢI tổ chức các component theo cấu trúc thư mục đã định nghĩa
+- PHẢI tuân theo mẫu cấu trúc file component đã được thiết lập
+- PHẢI đặt tên component theo PascalCase và tên file phải khớp với tên component
+- PHẢI phân tách các component lớn thành các component nhỏ hơn có thể tái sử dụng
 
-### Development Workflow
-- Before implementing new features:
-  1. Analyze requirements in detail
-  2. Research existing packages that could fulfill requirements
-  3. Document package selection rationale
-  4. Present package options if multiple viable solutions exist
-- Maintain consistent code style without TypeScript annotations
-- Use PropTypes for component prop validation instead of TypeScript interfaces
+### Sử Dụng Material-UI
+- PHẢI sử dụng các component có sẵn từ Material-UI khi có thể
+- PHẢI ưu tiên sử dụng theme và styled-components từ Material-UI
+- PHẢI tận dụng hệ thống styling của MUI (sx prop, styled API) thay vì CSS thuần
+- PHẢI sử dụng các biến spacing và breakpoints từ theme
+- PHẢI sử dụng các component layout của MUI (Box, Grid, Stack) để cấu trúc UI
 
-### Package Installation
-- Use yarn commands exclusively:
-  - `yarn add [package]` for new dependencies
-  - `yarn add -D [package]` for dev dependencies
-  - `yarn remove [package]` for removing packages
-  - `yarn` to install all dependencies
+### Quản Lý State với Redux
+- PHẢI tổ chức store theo module hoặc feature
+- PHẢI sử dụng cấu trúc action/reducer tiêu chuẩn
+- PHẢI sử dụng middleware thunk hoặc saga cho logic async
+- PHẢI sử dụng useSelector và useDispatch hooks thay vì connect HOC
+- KHÔNG được lưu trữ state cục bộ trong Redux nếu chỉ được sử dụng bởi một component
 
-## Examples
+### Quy Trình Phát Triển
+- PHẢI phân tích yêu cầu và lập kế hoạch trước khi triển khai
+- PHẢI xem xét các pattern đã được thiết lập trong dự án
+- PHẢI kiểm tra hiệu suất trước khi hoàn thành tính năng
+- PHẢI tạo các component có thể tái sử dụng khi có thể
+- PHẢI bảo đảm code dễ đọc và có chú thích khi cần thiết
+
+## Ví Dụ
 
 <example>
-// Good practice - Using existing package for complex functionality
-// Instead of implementing a custom date picker:
-yarn add @mui/x-date-pickers
+### Tốt - Sử dụng yarn và tận dụng package có sẵn
 
-// Component using the package
-import { DatePicker } from '@mui/x-date-pickers';
+```bash
+# Kiểm tra các package hiện có
+yarn list | grep mui
 
-function BookingForm() {
+# Thêm dependency mới
+yarn add @mui/x-data-grid
+
+# Sử dụng component có sẵn
+import { DataGrid } from '@mui/x-data-grid';
+import { Box, Typography } from '@mui/material';
+
+function DataTable({ rows, columns }) {
   return (
-    <DatePicker
-      label="Select Date"
-      onChange={handleDateChange}
-      renderInput={(params) => <TextField {...params} />}
-    />
+    <Box sx={{ height: 400, width: '100%' }}>
+      <Typography variant="h6" gutterBottom>
+        Data Table
+      </Typography>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        pageSize={5}
+        rowsPerPageOptions={[5, 10, 20]}
+        checkboxSelection
+        disableSelectionOnClick
+      />
+    </Box>
   );
 }
+```
+
+### Tốt - Sử dụng Redux với hooks
+
+```jsx
+// features/counter/counterSlice.js
+import { createSlice } from '@reduxjs/toolkit';
+
+export const counterSlice = createSlice({
+  name: 'counter',
+  initialState: {
+    value: 0,
+  },
+  reducers: {
+    increment: state => {
+      state.value += 1;
+    },
+    decrement: state => {
+      state.value -= 1;
+    },
+  },
+});
+
+export const { increment, decrement } = counterSlice.actions;
+export default counterSlice.reducer;
+
+// Component
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Button, Box, Typography } from '@mui/material';
+import { increment, decrement } from '../features/counter/counterSlice';
+
+export default function Counter() {
+  const count = useSelector(state => state.counter.value);
+  const dispatch = useDispatch();
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+      <Button variant="contained" onClick={() => dispatch(decrement())}>-</Button>
+      <Typography>{count}</Typography>
+      <Button variant="contained" onClick={() => dispatch(increment())}>+</Button>
+    </Box>
+  );
+}
+```
 </example>
 
 <example type="invalid">
-// Bad practice - Not utilizing existing packages
-// Implementing custom date picker from scratch
-class CustomDatePicker extends React.Component {
-  // Complex custom implementation
-  // Reinventing the wheel instead of using @mui/x-date-pickers
+### Không tốt - Tự triển khai khi đã có package sẵn
+
+```jsx
+// Tự triển khai data grid thay vì sử dụng @mui/x-data-grid
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+
+function CustomDataGrid({ rows, columns }) {
+  return (
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {columns.map((column) => (
+              <TableCell key={column.field}>{column.headerName}</TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow key={row.id}>
+              {columns.map((column) => (
+                <TableCell key={`${row.id}-${column.field}`}>{row[column.field]}</TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
+```
+
+### Không tốt - Sử dụng npm thay vì yarn
+
+```bash
+# Sử dụng npm thay vì yarn
+npm install @mui/material
+
+# Dùng npm với các lệnh không chuẩn
+npm i redux
+```
+
+### Không tốt - Sử dụng TypeScript
+
+```tsx
+// Sử dụng TypeScript thay vì JavaScript
+import React, { FC, useState } from 'react';
+import { Button } from '@mui/material';
+
+interface CounterProps {
+  initialValue: number;
 }
 
-// Bad practice - Using npm instead of yarn
-npm install some-package
+const Counter: FC<CounterProps> = ({ initialValue }) => {
+  const [count, setCount] = useState<number>(initialValue);
+  
+  return (
+    <div>
+      <p>{count}</p>
+      <Button onClick={() => setCount(count + 1)}>Increment</Button>
+    </div>
+  );
+};
 
-// Bad practice - Using TypeScript
-interface Props {
-  date: Date;
-  onChange: (date: Date) => void;
-}
+export default Counter;
+```
 </example>

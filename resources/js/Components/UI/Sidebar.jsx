@@ -1,7 +1,58 @@
 import { Link } from '@inertiajs/react';
-import ApplicationLogo from '@/Components/ApplicationLogo';
+import { useThemeColors } from '@/hooks/useThemeColors';
+import ThemeToggle from './ThemeToggle';
+import { useState, useEffect } from 'react';
+import {
+  Drawer,
+  Box,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+  Paper,
+  Tooltip,
+  styled,
+  Button,
+  Fab,
+} from '@mui/material';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import AddIcon from '@mui/icons-material/Add';
+import AddTaskIcon from '@mui/icons-material/AddTask';
+
+const drawerWidth = 256;
+
+// Styled component để tùy chỉnh Drawer
+const StyledDrawer = styled(Drawer, {
+  shouldForwardProp: prop => prop !== 'open',
+})(({ theme, open }) => ({
+  width: open ? drawerWidth : 72,
+  flexShrink: 0,
+  whiteSpace: 'nowrap',
+  boxSizing: 'border-box',
+  '& .MuiDrawer-paper': {
+    width: open ? drawerWidth : 72,
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    overflowX: 'hidden',
+    borderRight: `1px solid ${theme.palette.divider}`,
+  },
+}));
 
 export default function Sidebar({ isCollapsed, setIsCollapsed }) {
+  const { mode } = useThemeColors();
+  const themeColors = useThemeColors();
+  const [mounted, setMounted] = useState(false);
+
+  // Đảm bảo hydration khớp
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const navigation = [
     {
       name: 'Dashboard',
@@ -81,7 +132,8 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
           />
         </svg>
       ),
-      current: false,
+      current:
+        route().current('projects.index') || route().current('projects.show'),
     },
     {
       name: 'Calendar',
@@ -151,58 +203,65 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
     { id: 3, name: 'Database Migration', color: 'bg-yellow-500' },
   ];
 
+  if (!mounted) return null;
+
   return (
-    <div
-      className={`${isCollapsed ? 'md:w-16' : 'md:w-64'} hidden transition-all duration-300 ease-in-out md:fixed md:inset-y-0 md:flex md:flex-col`}
-    >
-      <div className="flex min-h-0 flex-1 flex-col bg-gray-800">
-        {/* Logo Section */}
-        <div className="flex h-16 flex-shrink-0 items-center bg-gray-900 px-4">
-          <Link href="/" className="flex items-center">
-            {!isCollapsed && (
-              <>
-                <ApplicationLogo className="h-8 w-auto text-white" />
-                <span className="ml-2 text-xl font-semibold text-white">
-                  NOTORIA
-                </span>
-              </>
-            )}
-            {isCollapsed && <ApplicationLogo className="h-8 w-8 text-white" />}
-          </Link>
-        </div>
+    <>
+      {/* Toggle Button - Nằm ngoài Drawer để không bị ảnh hưởng bởi drawer transitions */}
+      <Fab
+        size="small"
+        color={mode === 'dark' ? 'default' : 'primary'}
+        aria-label="toggle sidebar"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        sx={{
+          position: 'fixed',
+          left: !isCollapsed ? drawerWidth - 20 : 52,
+          top: 80,
+          zIndex: theme => theme.zIndex.drawer + 1,
+          transition: theme =>
+            theme.transitions.create(['left'], {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.enteringScreen,
+            }),
+          bgcolor: mode === 'dark' ? themeColors.background.paper : undefined,
+          color: mode === 'dark' ? themeColors.text.primary : undefined,
+          '&:hover': {
+            bgcolor:
+              mode === 'dark' ? themeColors.background.subtle : undefined,
+          },
+          height: 30,
+          width: 30,
+          minHeight: 30,
+        }}
+      >
+        {isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+      </Fab>
 
-        {/* Toggle Button */}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute -right-3 top-20 rounded-full border border-gray-700 bg-gray-800 p-1 hover:bg-gray-700 focus:outline-none"
-        >
-          <svg
-            className={`h-4 w-4 transform text-white transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
-            />
-          </svg>
-        </button>
-
+      <StyledDrawer
+        variant="permanent"
+        open={!isCollapsed}
+        sx={{
+          display: { xs: 'none', md: 'block' },
+        }}
+      >
         {/* Search Section - Only show when expanded */}
         {!isCollapsed && (
-          <div className="mt-5 px-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search tasks..."
-                className="w-full rounded-md bg-gray-700 py-2 pl-10 pr-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+          <Box sx={{ px: 1, mt: 11, mr: 2, pr: 2 }}>
+            <Paper
+              component="div"
+              sx={{
+                p: '2px 4px',
+                display: 'flex',
+                alignItems: 'center',
+                width: '100%',
+                bgcolor: themeColors.background.subtle,
+                border: `1px solid ${themeColors.border.light}`,
+                borderRadius: 1,
+              }}
+            >
+              <Box sx={{ ml: 1, color: themeColors.text.secondary }}>
                 <svg
-                  className="h-5 w-5 text-gray-400"
+                  className="h-5 w-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -214,102 +273,190 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
-              </div>
-            </div>
-          </div>
+              </Box>
+              <input
+                type="text"
+                placeholder="Search tasks..."
+                style={{
+                  border: 'none',
+                  background: 'transparent',
+                  padding: '8px 8px',
+                  outline: 'none',
+                  width: '100%',
+                  color: themeColors.text.primary,
+                }}
+              />
+            </Paper>
+          </Box>
         )}
 
         {/* Main Navigation */}
-        <div className="flex flex-1 flex-col overflow-y-auto pb-4 pt-5">
-          <nav className="flex-1 space-y-1 px-2">
-            {navigation.map(item => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`${
-                  item.current
-                    ? 'bg-gray-900 text-white'
-                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                } group flex items-center rounded-md px-2 py-2 text-sm font-medium`}
+        <List sx={{ mt: 1 }}>
+          {navigation.map(item => (
+            <ListItem key={item.name} disablePadding sx={{ display: 'block' }}>
+              <Tooltip
                 title={isCollapsed ? item.name : ''}
+                placement="right"
+                disableHoverListener={!isCollapsed}
               >
-                <div
-                  className={`${
-                    item.current
-                      ? 'text-gray-300'
-                      : 'text-gray-400 group-hover:text-gray-300'
-                  } ${isCollapsed ? 'mx-auto' : 'mr-3'} flex-shrink-0`}
+                <ListItemButton
+                  component={Link}
+                  href={item.href}
+                  selected={item.current}
+                  sx={{
+                    minHeight: 36,
+                    justifyContent: isCollapsed ? 'center' : 'initial',
+                    px: 2,
+                    borderRadius: '8px',
+                    mx: 1,
+                    my: 0.5,
+                    '&.Mui-selected': {
+                      bgcolor:
+                        mode === 'dark'
+                          ? 'rgba(144, 202, 249, 0.08)'
+                          : 'rgba(25, 118, 210, 0.08)',
+                      '&:hover': {
+                        bgcolor:
+                          mode === 'dark'
+                            ? 'rgba(144, 202, 249, 0.12)'
+                            : 'rgba(25, 118, 210, 0.12)',
+                      },
+                    },
+                  }}
                 >
-                  {item.icon}
-                </div>
-                {!isCollapsed && item.name}
-              </Link>
-            ))}
-          </nav>
-
-          {/* Recent Projects Section - Only show when expanded */}
-          {!isCollapsed && (
-            <div className="mt-8 px-2">
-              <h3 className="px-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
-                Recent Projects
-              </h3>
-              <div className="mt-2 space-y-1">
-                {projects.map(project => (
-                  <a
-                    key={project.id}
-                    href="#"
-                    className="group flex items-center rounded-md px-2 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: isCollapsed ? 'auto' : 3,
+                      justifyContent: 'center',
+                      color: item.current
+                        ? 'primary.main'
+                        : themeColors.text.secondary,
+                    }}
                   >
-                    <span
-                      className={`mr-3 h-2.5 w-2.5 rounded-full ${project.color}`}
-                      aria-hidden="true"
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.name}
+                    sx={{
+                      opacity: isCollapsed ? 0 : 1,
+                      color: item.current
+                        ? 'primary.main'
+                        : themeColors.text.primary,
+                      '& .MuiListItemText-primary': {
+                        fontSize: '15px',
+                        fontWeight: item.current ? 600 : 400,
+                      },
+                    }}
+                  />
+                </ListItemButton>
+              </Tooltip>
+            </ListItem>
+          ))}
+        </List>
+
+        {/* Recent Projects Section - Only show when expanded */}
+        {!isCollapsed && (
+          <Box sx={{ mt: 2, px: 2 }}>
+            <Typography
+              variant="subtitle2"
+              sx={{
+                px: 1,
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                color: themeColors.text.secondary,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+              }}
+            >
+              Recent Projects
+            </Typography>
+            <List>
+              {projects.map(project => (
+                <ListItem key={project.id} disablePadding>
+                  <ListItemButton
+                    sx={{
+                      borderRadius: '8px',
+                      mb: 0.5,
+                      '&:hover': {
+                        bgcolor: themeColors.action.hover,
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        mr: 2,
+                      }}
+                      className={project.color}
                     />
-                    {project.name}
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+                    <ListItemText
+                      primary={project.name}
+                      primaryTypographyProps={{
+                        fontSize: '0.875rem',
+                        fontWeight: 500,
+                        color: themeColors.text.primary,
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        )}
+
+        {/* Theme Toggle for collapsed mode */}
+        {isCollapsed && (
+          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+            <ThemeToggle />
+          </Box>
+        )}
 
         {/* Quick Actions - Only show when expanded */}
         {!isCollapsed && (
-          <div className="flex flex-shrink-0 flex-col gap-2 border-t border-gray-700 p-4">
-            <button className="flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-              <svg
-                className="mr-2 h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+          <Box
+            sx={{
+              mt: 'auto',
+              p: 2,
+              borderTop: `1px solid ${themeColors.border.light}`,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+            }}
+          >
+            <Tooltip title="New Task">
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                startIcon={<AddTaskIcon />}
+                sx={{ mb: 1 }}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-              New Task
-            </button>
-            <button className="flex w-full items-center justify-center rounded-md border border-gray-600 px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700">
-              <svg
-                className="mr-2 h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+                New Task
+              </Button>
+            </Tooltip>
+            <Tooltip title="New Project">
+              <Button
+                fullWidth
+                variant="outlined"
+                startIcon={<AddIcon />}
+                sx={{
+                  borderColor: themeColors.border.main,
+                  color: themeColors.text.primary,
+                  '&:hover': {
+                    borderColor: themeColors.text.primary,
+                    bgcolor: themeColors.action.hover,
+                  },
+                }}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              New Project
-            </button>
-          </div>
+                New Project
+              </Button>
+            </Tooltip>
+          </Box>
         )}
-      </div>
-    </div>
+      </StyledDrawer>
+    </>
   );
 }
