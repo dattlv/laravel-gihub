@@ -1,98 +1,289 @@
 import { Link } from '@inertiajs/react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
+import ThemeToggle from './ThemeToggle';
+import { useTheme } from '../../utils/ThemeContext';
+import { useThemeColors } from '@/hooks/useThemeColors';
+import {
+  Box,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Menu,
+  MenuItem,
+  Button,
+  styled,
+  Typography,
+  Stack,
+  Breadcrumbs,
+} from '@mui/material';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import HomeIcon from '@mui/icons-material/Home';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { useState } from 'react';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { usePage } from '@inertiajs/react';
 
-export default function Navbar({
-  user,
-  showingNavigationDropdown,
-  setShowingNavigationDropdown,
-  isSidebarCollapsed,
-}) {
+// Custom styled AppBar để ngăn sidebar đè lên
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+}));
+
+// PageHeader component để hiển thị tiêu đề và breadcrumb
+export function PageHeader({ breadcrumbs }) {
   return (
-    <nav className="border-b border-gray-100 bg-white">
-      <div
-        className={`${isSidebarCollapsed ? 'md:pl-16' : 'md:pl-64'} transition-all duration-300`}
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: { xs: 'column', sm: 'row' },
+        justifyContent: 'space-between',
+        alignItems: { xs: 'flex-start', sm: 'center' },
+        width: '100%',
+        gap: { xs: 1, sm: 0 },
+      }}
+    >
+      {breadcrumbs && (
+        <Breadcrumbs
+          separator={<NavigateNextIcon fontSize="small" />}
+          aria-label="breadcrumb"
+          sx={{ fontSize: '13px' }}
+        >
+          {breadcrumbs.map((crumb, index) => {
+            const isLast = index === breadcrumbs.length - 1;
+
+            if (isLast) {
+              return (
+                <Typography key={index} color="text.secondary" fontSize="13px">
+                  {crumb.icon && (
+                    <Box
+                      component="span"
+                      sx={{ mr: 0.5, verticalAlign: 'text-bottom' }}
+                    >
+                      {crumb.icon}
+                    </Box>
+                  )}
+                  {crumb.text}
+                </Typography>
+              );
+            }
+
+            return (
+              <Link key={index} href={crumb.href} className="no-underline">
+                <Stack direction="row" alignItems="center" spacing={0.5}>
+                  {crumb.icon && crumb.icon}
+                  <Typography color="text.primary" fontSize="13px">
+                    {crumb.text}
+                  </Typography>
+                </Stack>
+              </Link>
+            );
+          })}
+        </Breadcrumbs>
+      )}
+    </Box>
+  );
+}
+
+export default function Navbar({ user }) {
+  const { mode } = useTheme();
+  const themeColors = useThemeColors();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const pageInfo = usePage();
+  const pageTitle = pageInfo.props.title || '';
+  const project = pageInfo.props.project || null;
+
+  const handleClick = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  // Tạo breadcrumbs phù hợp với trang hiện tại
+  const getBreadcrumbs = () => {
+    const defaultCrumbs = [
+      {
+        text: 'Home',
+        href: route('dashboard'),
+        icon: <HomeIcon fontSize="small" sx={{ fontSize: 16 }} />,
+      },
+    ];
+    if (pageInfo.component === 'Projects/Index') {
+      return [
+        ...defaultCrumbs,
+        {
+          text: 'Projects',
+          href: route('projects.index'),
+          icon: <DashboardIcon fontSize="small" sx={{ fontSize: 16 }} />,
+        },
+      ];
+    }
+
+    if (pageInfo.component === 'Projects/Show') {
+      return [
+        ...defaultCrumbs,
+        {
+          text: 'Projects',
+          href: route('projects.index'),
+          icon: <DashboardIcon fontSize="small" sx={{ fontSize: 16 }} />,
+        },
+        {
+          text: project.name,
+          href: route('projects.show', project.id),
+          icon: <DashboardIcon fontSize="small" sx={{ fontSize: 16 }} />,
+        },
+      ];
+    }
+    return defaultCrumbs;
+  };
+
+  return (
+    <StyledAppBar
+      position="fixed"
+      color="default"
+      elevation={0}
+      sx={{
+        borderBottom: 1,
+        borderColor: 'divider',
+        bgcolor: mode === 'light' ? 'background.paper' : 'background.paper',
+        boxShadow:
+          mode === 'dark'
+            ? '0 1px 3px rgba(0,0,0,0.3)'
+            : '0 1px 3px rgba(0,0,0,0.1)',
+      }}
+    >
+      <Toolbar
+        sx={{
+          px: { xs: 2, sm: 3, lg: 4 },
+          transition: 'margin-left 0.3s ease',
+        }}
       >
-        <div className="max-w-full px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 justify-between">
-            <div className="flex">
-              <div className="flex shrink-0 items-center">
-                <Link href={route('dashboard')}>
-                  <ApplicationLogo className="block w-20 fill-current text-gray-800" />
-                </Link>
-              </div>
-            </div>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Link href={route('dashboard')}>
+            <ApplicationLogo
+              className={`w-20 ${mode === 'dark' ? 'fill-white' : 'fill-gray-800'}`}
+            />
+          </Link>
+        </Box>
 
-            <div className="hidden sm:ms-6 sm:flex sm:items-center">
-              <div className="relative ms-3">
-                <div className="flex items-center gap-4">
-                  <button className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none">
-                    <svg
-                      className="h-6 w-6 text-gray-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                      />
-                    </svg>
-                  </button>
+        <Box
+          sx={{
+            ml: 4,
+            flexGrow: 1,
+            display: { xs: 'none', md: 'block' },
+          }}
+        >
+          <PageHeader title={project?.name} breadcrumbs={getBreadcrumbs()} />
+        </Box>
+        <Box
+          sx={{
+            display: { xs: 'none', sm: 'flex' },
+            alignItems: 'center',
+            gap: 2,
+            ml: pageTitle ? 0 : 'auto',
+          }}
+        >
+          <ThemeToggle />
 
-                  <div className="relative">
-                    <button
-                      onClick={() =>
-                        setShowingNavigationDropdown(
-                          previousState => !previousState,
-                        )
-                      }
-                      className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                    >
-                      {user?.name || 'Guest'}
+          <IconButton
+            color="inherit"
+            size="medium"
+            sx={{
+              color: themeColors.text.secondary,
+            }}
+          >
+            <NotificationsIcon />
+          </IconButton>
 
-                      <svg
-                        className="-me-0.5 ms-2 h-4 w-4"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
+          <Box>
+            <Button
+              color="inherit"
+              onClick={handleClick}
+              endIcon={<KeyboardArrowDownIcon />}
+              sx={{
+                textTransform: 'none',
+                fontWeight: 500,
+                fontSize: '0.875rem',
+                color: themeColors.text.primary,
+              }}
+            >
+              {user?.name || 'Guest'}
+            </Button>
 
-                    <div
-                      className={`${
-                        showingNavigationDropdown ? 'block' : 'hidden'
-                      } absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
-                    >
-                      <Link
-                        href={route('profile.edit')}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Profile
-                      </Link>
-                      <Link
-                        href={route('logout')}
-                        method="post"
-                        as="button"
-                        className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Log Out
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nav>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+                'aria-labelledby': 'user-menu-button',
+              }}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              PaperProps={{
+                sx: {
+                  bgcolor: themeColors.background.paper,
+                  borderRadius: '8px',
+                  boxShadow:
+                    mode === 'dark'
+                      ? '0 4px 20px rgba(0,0,0,0.5)'
+                      : '0 4px 20px rgba(0,0,0,0.1)',
+                },
+              }}
+            >
+              <MenuItem
+                onClick={handleClose}
+                component={Link}
+                href={route('profile.edit')}
+                sx={{
+                  color: themeColors.text.primary,
+                  '&:hover': {
+                    bgcolor: themeColors.action.hover,
+                  },
+                }}
+              >
+                Profile
+              </MenuItem>
+              <MenuItem
+                onClick={handleClose}
+                component={Link}
+                href={route('logout')}
+                method="post"
+                as="button"
+                sx={{
+                  color: themeColors.text.primary,
+                  '&:hover': {
+                    bgcolor: themeColors.action.hover,
+                  },
+                }}
+              >
+                Log Out
+              </MenuItem>
+            </Menu>
+          </Box>
+        </Box>
+      </Toolbar>
+
+      {/* Mobile Breadcrumbs - Chỉ hiển thị khi màn hình nhỏ */}
+      <Box
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          px: { xs: 2, sm: 3 },
+          pb: 1,
+        }}
+      >
+        <PageHeader title={pageTitle} breadcrumbs={getBreadcrumbs()} />
+      </Box>
+    </StyledAppBar>
   );
 }
