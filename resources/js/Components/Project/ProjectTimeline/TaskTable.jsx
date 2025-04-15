@@ -12,8 +12,8 @@ import TaskRow from './TaskRow';
 
 // Import the same column width configuration used in TaskRow
 const COLUMN_WIDTHS = {
-  child: '4%',
-  type: '3%',
+  child: '3%',
+  type: '4%',
   id: '7%',
   name: '25%',
   status: '10%',

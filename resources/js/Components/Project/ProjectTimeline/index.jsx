@@ -1,13 +1,14 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Box, Button } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { useTheme } from '../../../utils/ThemeContext';
+import ProjectLoader from '../../common/ProjectLoader';
 
 // Import our new components
-import FilterBar from './FilterBar';
 import ProgressTracker from './ProgressTracker';
 import TaskTable from './TaskTable';
-import { initialTasks, TASK_STATUSES } from './mockData';
+import { initialTasks, SPRINT_OPTIONS, TASK_STATUSES } from './mockData';
+import FilterBar from '../../common/FilterSelect';
 
 /**
  * ProjectTimeline component displays a list of tasks in a timeline view
@@ -21,7 +22,18 @@ const ProjectTimeline = () => {
   const [status, setStatus] = useState('');
   const [sprint, setSprint] = useState('');
   const [type, setType] = useState('');
+  const [priority, setPriority] = useState('');
+  const [loading, setLoading] = useState(true);
   const { mode } = useTheme();
+
+  // Simulate loading data
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Toggle expanded state for a row
   const toggleRowExpanded = taskId => {
@@ -31,6 +43,48 @@ const ProjectTimeline = () => {
     }));
   };
 
+  const filters = [
+    {
+      name: 'Status',
+      value: status,
+      onChange: e => setStatus(e.target.value),
+      options: [
+        { value: TASK_STATUSES.TODO, label: 'To Do' },
+        { value: TASK_STATUSES.IN_PROGRESS, label: 'In Progress' },
+        { value: TASK_STATUSES.DONE, label: 'Done' },
+      ],
+      emptyOptionText: 'All Status',
+    },
+    {
+      name: 'Sprints',
+      value: sprint,
+      onChange: e => setSprint(e.target.value),
+      options: SPRINT_OPTIONS.map(sprint => ({ value: sprint, label: sprint })),
+      emptyOptionText: 'All Sprints',
+      width: 150,
+    },
+    {
+      name: 'Types',
+      value: type,
+      onChange: e => setType(e.target.value),
+      options: [
+        { value: 'Task', label: 'Task' },
+        { value: 'Note', label: 'Note' },
+      ],
+      emptyOptionText: 'All Types',
+    },
+    {
+      name: 'Priority',
+      value: priority,
+      onChange: e => setPriority(e.target.value),
+      options: [
+        { value: 'high', label: 'High' },
+        { value: 'medium', label: 'Medium' },
+        { value: 'low', label: 'Low' },
+      ],
+      emptyOptionText: 'All Priorities',
+    },
+  ];
   // Calculate task counts for progress display
   const taskCounts = useMemo(() => {
     const todoCount = tasks.filter(
@@ -62,51 +116,64 @@ const ProjectTimeline = () => {
         const matchesStatus = status ? task.status === status : true;
         const matchesSprint = sprint ? task.sprint.includes(sprint) : true;
         const matchesType = type ? task.type === type.toLowerCase() : true;
-        return matchesSearch && matchesStatus && matchesSprint && matchesType;
+        const matchesPriority = priority ? task.priority === priority : true;
+
+        return (
+          matchesSearch &&
+          matchesStatus &&
+          matchesSprint &&
+          matchesType &&
+          matchesPriority
+        );
       }),
-    [tasks, searchQuery, status, sprint, type],
+    [tasks, searchQuery, status, sprint, type, priority],
   );
 
   return (
-    <Box sx={{ px: 3 }}>
-      {/* Filters and Search */}
-      <FilterBar
-        mode={mode}
-        status={status}
-        setStatus={setStatus}
-        sprint={sprint}
-        setSprint={setSprint}
-        type={type}
-        setType={setType}
-        setSearchQuery={setSearchQuery}
-      />
+    <Box sx={{ px: 2 }}>
+      {loading ? (
+        <ProjectLoader.Timeline />
+      ) : (
+        <>
+          {/* Filters and Search */}
+          <FilterBar
+            searchProps={{
+              placeholder: 'Tìm kiếm ...',
+              width: 250,
+              onChange: e => setSearchQuery(e.target.value),
+            }}
+            filters={filters}
+            spacing={2}
+            mode={mode}
+          />
 
-      {/* Progress Section */}
-      <ProgressTracker
-        todoCount={taskCounts.todoCount}
-        inProgressCount={taskCounts.inProgressCount}
-        doneCount={taskCounts.doneCount}
-        totalTasks={taskCounts.totalTasks}
-      />
+          {/* Progress Section */}
+          <ProgressTracker
+            todoCount={taskCounts.todoCount}
+            inProgressCount={taskCounts.inProgressCount}
+            doneCount={taskCounts.doneCount}
+            totalTasks={taskCounts.totalTasks}
+          />
 
-      {/* Task Table */}
-      <TaskTable
-        filteredTasks={filteredTasks}
-        expandedRows={expandedRows}
-        toggleRowExpanded={toggleRowExpanded}
-        allTasks={tasks}
-      />
+          {/* Task Table */}
+          <TaskTable
+            filteredTasks={filteredTasks}
+            expandedRows={expandedRows}
+            toggleRowExpanded={toggleRowExpanded}
+            allTasks={tasks}
+          />
 
-      <Button
-        variant="contained"
-        startIcon={<AddIcon />}
-        size="small"
-        sx={{ textTransform: 'none', mt: 2 }}
-      >
-        Create issue
-      </Button>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            size="small"
+            sx={{ textTransform: 'none' }}
+          >
+            Create issue
+          </Button>
+        </>
+      )}
     </Box>
   );
 };
-
 export default ProjectTimeline;

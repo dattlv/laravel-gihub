@@ -1,0 +1,48 @@
+/* Override dark mode input background colors */
+html[data-color-scheme='dark'] input,
+html[data-color-scheme='dark'] textarea,
+html[data-color-scheme='dark'] select {
+  background-color: transparent !important;
+}
+
+/* Ensure proper text contrast in dark mode */
+html[data-color-scheme='dark'] .MuiInputBase-root {
+  background-color: transparent !important;
+}
+
+/* For autocomplete background */
+html[data-color-scheme='dark'] input:-webkit-autofill,
+html[data-color-scheme='dark'] textarea:-webkit-autofill,
+html[data-color-scheme='dark'] select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #1e1e1e inset !important;
+  -webkit-text-fill-color: #f3f4f6 !important;
+}
+
+/* Remove focus shadows from all form elements */
+[type='text']:focus,
+input:where(:not([type])):focus,
+[type='email']:focus,
+[type='url']:focus,
+[type='password']:focus,
+[type='number']:focus,
+[type='date']:focus,
+[type='datetime-local']:focus,
+[type='month']:focus,
+[type='search']:focus,
+[type='tel']:focus,
+[type='time']:focus,
+[type='week']:focus,
+[multiple]:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  --tw-ring-inset: var(--tw-empty, /*!*/ /*!*/);
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: transparent;
+  --tw-ring-color: transparent;
+  --tw-ring-offset-shadow: none;
+  --tw-ring-shadow: none;
+  box-shadow: none;
+  border-color: #2563eb; /* Keep the border color to show focus state */
+}

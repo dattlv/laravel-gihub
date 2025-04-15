@@ -1,9 +1,10 @@
 import { styled } from '@mui/material/styles';
 import { Chip, IconButton, TableCell } from '@mui/material';
 
-export const StyledTableCell = styled(TableCell)(({ theme }) => ({
+export const StyledTableCell = styled(TableCell)(({ theme, styles }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
   padding: theme.spacing(1),
+  ...styles,
 }));
 
 export const StyledIconButton = styled(IconButton)(({ theme }) => ({

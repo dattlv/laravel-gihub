@@ -1,4 +1,5 @@
 import '../css/app.css';
+import '../css/form-overrides.css'; // Import the form overrides CSS
 import './bootstrap';
 
 import { createInertiaApp } from '@inertiajs/react';

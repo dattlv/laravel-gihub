@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography, TableRow, TableCell, Collapse, Box } from '@mui/material';
 import PropTypes from 'prop-types';
 import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
-  KeyboardArrowRight as KeyboardArrowRightIcon,
   BoltOutlined as TaskIcon,
   NoteOutlined as NoteIcon,
 } from '@mui/icons-material';
@@ -16,8 +15,8 @@ import { TASK_TYPES } from './mockData';
 import { isEmpty } from 'lodash';
 
 const COLUMN_WIDTHS = {
-  toggle: '4%',
-  type: '3%',
+  toggle: '3%',
+  type: '4%',
   id: '7%',
   name: '25%',
   status: '10%',
@@ -36,7 +35,7 @@ const getTypeIcon = type =>
     <NoteIcon color="primary" />
   );
 
-// Component riêng cho task cell để tái sử dụng giữa parent và child tasks
+// Component for task cells to reuse between parent and child tasks
 const TaskCells = ({ task }) => (
   <>
     <StyledTableCell width={COLUMN_WIDTHS.id}>
@@ -104,58 +103,111 @@ TaskCells.propTypes = {
   }).isRequired,
 };
 
-const TaskRow = ({ task, expandedRows, toggleRowExpanded, childTasks }) => (
-  <React.Fragment>
-    <TableRow hover sx={{ '& .MuiTypography-root': { fontSize: '13px' } }}>
-      <StyledTableCell width={COLUMN_WIDTHS.toggle}>
-        {task.type === TASK_TYPES.TASK && !isEmpty(childTasks) && (
-          <StyledIconButton
-            size="small"
-            onClick={() => toggleRowExpanded(task.id)}
-          >
-            {expandedRows[task.id] ? (
-              <KeyboardArrowDownIcon fontSize="small" />
-            ) : (
-              <KeyboardArrowRightIcon fontSize="small" />
-            )}
-          </StyledIconButton>
-        )}
-      </StyledTableCell>
-      <StyledTableCell width={COLUMN_WIDTHS.type}>
-        {getTypeIcon(task.type)}
-      </StyledTableCell>
-      <TaskCells task={task} />
-    </TableRow>
+const TaskRow = ({ task, expandedRows, toggleRowExpanded, childTasks }) => {
+  // Add local state for smooth animation
+  const [isRotating, setIsRotating] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(expandedRows[task.id] || false);
 
-    {/* Child Tasks */}
-    {task.type === TASK_TYPES.TASK && !isEmpty(childTasks) && (
-      <TableRow>
-        <TableCell style={{ padding: 0 }} colSpan={10}>
-          <Collapse in={expandedRows[task.id]} timeout="auto" unmountOnExit>
-            <Box>
-              {childTasks.map(childTask => (
-                <TableRow
-                  key={childTask.id}
-                  hover
-                  sx={{
-                    '& .MuiTypography-root': { fontSize: '13px' },
-                    display: 'flex',
-                  }}
-                >
-                  <StyledTableCell width={COLUMN_WIDTHS.toggle} />
-                  <StyledTableCell width={COLUMN_WIDTHS.type}>
-                    {getTypeIcon(childTask.type)}
-                  </StyledTableCell>
-                  <TaskCells task={childTask} />
-                </TableRow>
-              ))}
-            </Box>
-          </Collapse>
-        </TableCell>
+  // Update local state when parent state changes
+  useEffect(() => {
+    setIsExpanded(expandedRows[task.id] || false);
+  }, [expandedRows, task.id]);
+
+  // Handle toggle with animation
+  const handleToggle = () => {
+    setIsRotating(true);
+    toggleRowExpanded(task.id);
+
+    // Reset rotation state after animation completes
+    setTimeout(() => {
+      setIsRotating(false);
+    }, 300);
+  };
+
+  const hasChildTasks = task.type === TASK_TYPES.TASK && !isEmpty(childTasks);
+
+  return (
+    <React.Fragment>
+      <TableRow hover sx={{ '& .MuiTypography-root': { fontSize: '13px' } }}>
+        <StyledTableCell width={COLUMN_WIDTHS.toggle}>
+          {hasChildTasks && (
+            <StyledIconButton
+              size="small"
+              onClick={handleToggle}
+              sx={{
+                transition: 'transform 0.3s ease',
+                transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)',
+                '&.rotating': {
+                  animation: 'rotate 0.3s ease',
+                },
+                '@keyframes rotate': {
+                  '0%': {
+                    transform: isExpanded ? 'rotate(-90deg)' : 'rotate(0deg)',
+                  },
+                  '100%': {
+                    transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)',
+                  },
+                },
+              }}
+              className={isRotating ? 'rotating' : ''}
+            >
+              <KeyboardArrowDownIcon fontSize="small" />
+            </StyledIconButton>
+          )}
+        </StyledTableCell>
+        <StyledTableCell width={COLUMN_WIDTHS.type}>
+          {getTypeIcon(task.type)}
+        </StyledTableCell>
+        <TaskCells task={task} />
       </TableRow>
-    )}
-  </React.Fragment>
-);
+
+      {/* Child Tasks */}
+      {hasChildTasks && (
+        <TableRow>
+          <TableCell style={{ padding: 0 }} colSpan={10}>
+            <Collapse
+              in={isExpanded}
+              timeout={300}
+              unmountOnExit
+              sx={{
+                transition: 'height 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                opacity: isExpanded ? 1 : 0,
+              }}
+            >
+              <Box
+                sx={{
+                  opacity: isExpanded ? 1 : 0,
+                  transition: 'opacity 0.3s ease',
+                  transitionDelay: isExpanded ? '0.1s' : '0s',
+                }}
+              >
+                {childTasks.map(childTask => (
+                  <TableRow
+                    key={childTask.id}
+                    hover
+                    sx={{
+                      '& .MuiTypography-root': { fontSize: '13px' },
+                      display: 'flex',
+                    }}
+                  >
+                    <StyledTableCell
+                      sx={{ borderBottom: 'none' }}
+                      width={COLUMN_WIDTHS.toggle}
+                    />
+                    <StyledTableCell width={COLUMN_WIDTHS.type}>
+                      {getTypeIcon(childTask.type)}
+                    </StyledTableCell>
+                    <TaskCells task={childTask} />
+                  </TableRow>
+                ))}
+              </Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+      )}
+    </React.Fragment>
+  );
+};
 
 TaskRow.propTypes = {
   task: PropTypes.shape({
