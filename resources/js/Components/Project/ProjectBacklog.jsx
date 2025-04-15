@@ -1,5 +1,5 @@
 /* eslint-disable indent */
-import { useState, useCallback, memo, useMemo, useEffect } from 'react';
+import { useState, useCallback, memo, useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -30,9 +30,8 @@ import {
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { useTheme } from '../../../utils/ThemeContext';
-import { darkTheme } from '../../../utils/theme';
-import ProjectLoader from '../../common/ProjectLoader';
+import { useTheme } from '../../utils/ThemeContext';
+import { darkTheme } from '../../utils/theme';
 
 // Styled components
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -400,7 +399,6 @@ const SprintHeader = memo(function SprintHeader({
 // Main Component
 export default function ProjectBacklog({ searchQuery }) {
   const { mode } = useTheme();
-  const [loading, setLoading] = useState(true);
   const [expandedSprints, setExpandedSprints] = useState({
     'Scrum Sprint 1': true,
     'Scrum Sprint 2': true,
@@ -447,15 +445,6 @@ export default function ProjectBacklog({ searchQuery }) {
       issues: [],
     },
   ]);
-
-  // Simulate loading data
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Toggle sprint expanded state
   const toggleSprintExpanded = useCallback(sprintId => {
@@ -612,171 +601,162 @@ export default function ProjectBacklog({ searchQuery }) {
 
   return (
     <Box sx={{ p: 2, pt: 0 }}>
-      {loading ? (
-        <ProjectLoader.Backlog />
-      ) : (
-        <>
-          {/* Header */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              mb: 2,
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>
-                Backlog
-              </Typography>
-              <Stack direction="row" spacing={1}>
-                <StyledIconButton>
-                  <ShareIcon fontSize="small" />
-                </StyledIconButton>
-                <StyledIconButton>
-                  <MoreHorizIcon fontSize="small" />
-                </StyledIconButton>
-              </Stack>
-            </Box>
+      {/* Header */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          mb: 2,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>
+            Backlog
+          </Typography>
+          <Stack direction="row" spacing={1}>
+            <StyledIconButton>
+              <ShareIcon fontSize="small" />
+            </StyledIconButton>
+            <StyledIconButton>
+              <MoreHorizIcon fontSize="small" />
+            </StyledIconButton>
+          </Stack>
+        </Box>
 
-            <Stack direction="row" spacing={2}>
-              <StyledIconButton>
-                <SettingsIcon />
-              </StyledIconButton>
-            </Stack>
-          </Box>
+        <Stack direction="row" spacing={2}>
+          <StyledIconButton>
+            <SettingsIcon />
+          </StyledIconButton>
+        </Stack>
+      </Box>
 
-          {/* Drag and Drop Context */}
-          <DragDropContext onDragEnd={handleDragEnd}>
-            {/* Sprints */}
-            {sprints.map(sprint => {
-              // Pre-calculate filtered issues
-              const filteredIssues = getFilteredIssues(
-                sprint.issues,
-                searchQuery,
-              );
+      {/* Drag and Drop Context */}
+      <DragDropContext onDragEnd={handleDragEnd}>
+        {/* Sprints */}
+        {sprints.map(sprint => {
+          // Pre-calculate filtered issues
+          const filteredIssues = getFilteredIssues(sprint.issues, searchQuery);
 
-              return (
-                <SprintBox
-                  key={sprint.id}
-                  data-sprint-id={sprint.id}
-                  sx={{
-                    p: 1,
-                    borderRadius: 4,
-                    bgcolor: mode === 'light' ? '#F7F8FA' : '#FFFFFF10',
-                  }}
-                >
-                  <SprintHeader
-                    sprint={sprint}
-                    isExpanded={expandedSprints[sprint.id]}
-                    onToggleExpand={() => toggleSprintExpanded(sprint.id)}
-                  />
+          return (
+            <SprintBox
+              key={sprint.id}
+              data-sprint-id={sprint.id}
+              sx={{
+                p: 1,
+                borderRadius: 4,
+                bgcolor: mode === 'light' ? '#F7F8FA' : '#FFFFFF10',
+              }}
+            >
+              <SprintHeader
+                sprint={sprint}
+                isExpanded={expandedSprints[sprint.id]}
+                onToggleExpand={() => toggleSprintExpanded(sprint.id)}
+              />
 
-                  <Collapse in={expandedSprints[sprint.id]}>
-                    {/* Issues Container */}
-                    <Droppable droppableId={sprint.id}>
-                      {(providedDroppable, snapshotDroppable) =>
-                        filteredIssues.length > 0 ? (
-                          <Box>
-                            <TableContainer
-                              component={Paper}
-                              variant="outlined"
-                              sx={{
-                                bgcolor: snapshotDroppable.isDraggingOver
-                                  ? 'rgba(25, 118, 210, 0.04)'
-                                  : 'background.paper',
-                                position: 'relative',
-                                transform: 'translateZ(0)',
-                                backfaceVisibility: 'hidden',
-                                border: snapshotDroppable.isDraggingOver
-                                  ? '1px solid rgba(25, 118, 210, 0.5)'
-                                  : undefined,
-                                transition: 'all 0.2s ease',
-                                mb: 1.5,
-                              }}
+              <Collapse in={expandedSprints[sprint.id]}>
+                {/* Issues Container */}
+                <Droppable droppableId={sprint.id}>
+                  {(providedDroppable, snapshotDroppable) =>
+                    filteredIssues.length > 0 ? (
+                      <Box>
+                        <TableContainer
+                          component={Paper}
+                          variant="outlined"
+                          sx={{
+                            bgcolor: snapshotDroppable.isDraggingOver
+                              ? 'rgba(25, 118, 210, 0.04)'
+                              : 'background.paper',
+                            position: 'relative',
+                            transform: 'translateZ(0)',
+                            backfaceVisibility: 'hidden',
+                            border: snapshotDroppable.isDraggingOver
+                              ? '1px solid rgba(25, 118, 210, 0.5)'
+                              : undefined,
+                            transition: 'all 0.2s ease',
+                            mb: 1.5,
+                          }}
+                        >
+                          <Table size="small">
+                            <TableBody
+                              ref={providedDroppable.innerRef}
+                              {...providedDroppable.droppableProps}
                             >
-                              <Table size="small">
-                                <TableBody
-                                  ref={providedDroppable.innerRef}
-                                  {...providedDroppable.droppableProps}
-                                >
-                                  {filteredIssues.map((issue, index) => (
-                                    <IssueItem
-                                      key={issue.id}
-                                      issue={issue}
-                                      index={index}
-                                      sprintId={sprint.id}
-                                      handleStatusChange={handleStatusChange}
-                                      mode={mode}
-                                    />
-                                  ))}
-                                  <IssueItem
-                                    issue="create"
-                                    index={filteredIssues.length}
-                                    mode={mode}
-                                  />
-                                  {providedDroppable.placeholder}
-                                </TableBody>
-                              </Table>
-                            </TableContainer>
-                          </Box>
-                        ) : (
-                          <Box
-                            ref={providedDroppable.innerRef}
-                            {...providedDroppable.droppableProps}
-                            sx={{
-                              p: 2,
-                              textAlign: 'center',
-                              borderRadius: 1,
-                              border: snapshotDroppable.isDraggingOver
-                                ? '1px dashed rgba(25, 118, 210, 0.7)'
-                                : '1px dashed rgba(0, 0, 0, 0.12)',
-                              borderColor: snapshotDroppable.isDraggingOver
-                                ? 'primary.main'
-                                : 'divider',
-                              borderStyle: 'dashed',
-                              transition: 'all 0.2s ease',
-                              display: 'flex',
-                              flexDirection: 'column',
-                              gap: 2,
-                              minHeight: '50px',
-                            }}
-                          >
-                            <Typography color="text.secondary" fontSize="12px">
-                              {sprint.id === 'Backlog'
-                                ? 'Your backlog is empty.'
-                                : 'Plan a sprint by dragging the sprint footer down below some issues, or by dragging issues here.'}
-                            </Typography>
+                              {filteredIssues.map((issue, index) => (
+                                <IssueItem
+                                  key={issue.id}
+                                  issue={issue}
+                                  index={index}
+                                  sprintId={sprint.id}
+                                  handleStatusChange={handleStatusChange}
+                                  mode={mode}
+                                />
+                              ))}
+                              <IssueItem
+                                issue="create"
+                                index={filteredIssues.length}
+                                mode={mode}
+                              />
+                              {providedDroppable.placeholder}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      </Box>
+                    ) : (
+                      <Box
+                        ref={providedDroppable.innerRef}
+                        {...providedDroppable.droppableProps}
+                        sx={{
+                          p: 2,
+                          textAlign: 'center',
+                          borderRadius: 1,
+                          border: snapshotDroppable.isDraggingOver
+                            ? '1px dashed rgba(25, 118, 210, 0.7)'
+                            : '1px dashed rgba(0, 0, 0, 0.12)',
+                          borderColor: snapshotDroppable.isDraggingOver
+                            ? 'primary.main'
+                            : 'divider',
+                          borderStyle: 'dashed',
+                          transition: 'all 0.2s ease',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 2,
+                          minHeight: '50px',
+                        }}
+                      >
+                        <Typography color="text.secondary" fontSize="12px">
+                          {sprint.id === 'Backlog'
+                            ? 'Your backlog is empty.'
+                            : 'Plan a sprint by dragging the sprint footer down below some issues, or by dragging issues here.'}
+                        </Typography>
 
-                            <Button
-                              variant="outlined"
-                              startIcon={<AddIcon />}
-                              size="small"
-                              sx={{
-                                textTransform: 'none',
-                                borderColor: 'rgba(0, 0, 0, 0.12)',
-                                color: 'text.secondary',
-                                '&:hover': {
-                                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                                  borderColor: 'rgba(0, 0, 0, 0.2)',
-                                },
-                              }}
-                            >
-                              Create issue in{' '}
-                              {sprint.id.split(' ')[0].toLowerCase()}
-                            </Button>
-                            {providedDroppable.placeholder}
-                          </Box>
-                        )
-                      }
-                    </Droppable>
-                  </Collapse>
-                </SprintBox>
-              );
-            })}
-          </DragDropContext>
-        </>
-      )}
+                        <Button
+                          variant="outlined"
+                          startIcon={<AddIcon />}
+                          size="small"
+                          sx={{
+                            textTransform: 'none',
+                            borderColor: 'rgba(0, 0, 0, 0.12)',
+                            color: 'text.secondary',
+                            '&:hover': {
+                              backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                              borderColor: 'rgba(0, 0, 0, 0.2)',
+                            },
+                          }}
+                        >
+                          Create issue in{' '}
+                          {sprint.id.split(' ')[0].toLowerCase()}
+                        </Button>
+                        {providedDroppable.placeholder}
+                      </Box>
+                    )
+                  }
+                </Droppable>
+              </Collapse>
+            </SprintBox>
+          );
+        })}
+      </DragDropContext>
     </Box>
   );
 }
